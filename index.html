@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="main.css">
+  <script src="jquery-1.12.0.min.js"></script>
+</head>
+
+<body>
+
+<div id="subjForm">
+  Subject ID: <input type="text" id="subjID" size="3"><br/>
+  Date: <input type="datetime-local" id="date"><br/>
+  Script: <input type="radio" id="script" value="A"> A
+    <input type="radio" id="script" value="B"> B<br/>
+  <button id="submitForm">Submit</button>
+</div>
+
+<div id="main">
+  <img class="backgroundImg">
+  <div id="narrator"><img id="narrImg" class="charImg"></div>
+  <div id="char1"><img id = "c1Img" class="charImg"></div>
+  <div id="char2"><img id = "c2Img" class="charImg"></div>
+  <div id="narrTarget" class="target"></div>
+  <div id="c1Target" class="target"></div>
+  <div id="c2Target" class="target"></div>
+  <div id="objStart"><img id="objImg" class="objImg"></div>
+</div>
+
+<div>
+  <hr/>
+  <button id="nextButton">Next</button>
+  <span id="status">Nothing new here.</span>
+</div>
+
+<div>
+  <p>This will have the trial/progress info.</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<!-- <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.12.0.min.js"><\/script>')</script> -->
+
+<script src="main.js"></script>
+
+</body>
+</html>
