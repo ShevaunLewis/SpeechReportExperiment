@@ -25,12 +25,15 @@ fieldset {
 
 /* Specific to the Speech Reports webapp */
 
-#main {
+.display {
     width: 525px;
-    height: 400px;
     margin-left: auto;
     margin-right: auto;
     position: relative;
+}
+
+#main {
+    height: 400px;
 }
 
 img.backgroundImg {

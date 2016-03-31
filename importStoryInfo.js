@@ -52,3 +52,18 @@ Papa.parse("storyText.csv", {
 	});
     }
 });
+
+// create an associative array of scripts: primary key is the StoryId,
+// value is an associative array where the script name (a, b, block-d, block-i)
+// is the key and the condition is the value.
+Papa.parse("scripts.csv", {
+    download: true,
+    header: true,
+    complete: function(results) {
+	var scripts = results.data;
+	stories.forEach(function (it) {
+	    it.scriptConds = scripts[it.storyId];
+	});
+    }
+});
+	
