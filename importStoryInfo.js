@@ -3,7 +3,7 @@ var stories;
 
 // create an associative array of image filenames
 // has the form {Dora: "img/characters/Dora.png", Swiper: "...", ...}
-Papa.parse("imageFiles.csv", {
+Papa.parse("expInfo/imageFiles.csv", {
     download: true,
     header: true,
     complete: function(results) {
@@ -15,7 +15,7 @@ Papa.parse("imageFiles.csv", {
 });
 
 // create an array of story objects
-Papa.parse("storyInfo.csv", {
+Papa.parse("expInfo/storyInfo.csv", {
     download: true,
     header: true,
     complete: function(results) {
@@ -31,7 +31,7 @@ Papa.parse("storyInfo.csv", {
 // the information from the text hash then gets added to the storyArray,
 // so that each story has a property "text" containing the associative array
 // of the phases.
-Papa.parse("storyText.csv", {
+Papa.parse("expInfo/storyText.csv", {
     download: true,
     header: true,
     complete: function(results) {
@@ -56,7 +56,7 @@ Papa.parse("storyText.csv", {
 // create an associative array of scripts: primary key is the StoryId,
 // value is an associative array where the script name (a, b, block-d, block-i)
 // is the key and the condition is the value.
-Papa.parse("scripts.csv", {
+Papa.parse("expInfo/scripts.csv", {
     download: true,
     header: true,
     complete: function(results) {
