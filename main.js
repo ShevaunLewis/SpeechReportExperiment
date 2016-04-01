@@ -2,6 +2,7 @@ var currentStory = 0;
 var currentPhase = 0;
 var phases = ["hi","scene1","give1","give2","scene2","take1","take2","end"];
 var subjInfo = {};
+var responses = [];
 
 // Collect subject information from form on start page
 $("#submitForm").click(saveSubjInfo);
@@ -38,6 +39,19 @@ function updateDisplay(){
     // get current story object
     var story = stories[currentStory];
 
+    // update text depending on the phase and condition (set by the script)
+    var phaseText = story.text[phases[currentPhase]];
+    var storyCond = story.scriptConds[subjInfo.script];
+    var includedText = [];
+    phaseText.forEach(function(it) {
+	if ((it.cond == storyCond || it.cond == "na")) {
+	    includedText.push(it.text);
+	}
+    });
+    $("#storyText").html(includedText.join("<br/>"));
+
+    // set trial info in case we need to store a response
+ 
     // update images depending on the phase of the story 
     switch(currentPhase) {
     case 0: //intro
@@ -53,7 +67,16 @@ function updateDisplay(){
 	$("#c2Img").attr("src",imageFiles[story.c2]);
 	break;
     case 2: //give1
-	$("#objImg").attr("src",imageFiles[story.giveObj1]);
+	// need to change this to add a new image to the div, rather than just
+	// change the source of an existing one (since this image will move)
+	$("#objImg").attr({
+	    "src" : imageFiles[story.giveObj1],
+	    "ondragstart" : "drag(event)"
+	});
+	$(".char").attr({
+	    "ondrop" : "drop(event)",
+	    "ondragover" : "allowDrop(event)"
+	});
 	break;
     case 3: //give2
 	$("#objImg").attr("src",imageFiles[story.giveObj2]);
@@ -63,19 +86,6 @@ function updateDisplay(){
 	break;
     }
 
-    // update text depending on the phase and condition (set by the script)
-    var phaseText = story.text[phases[currentPhase]];
-    console.log(phaseText);
-    var storyCond = story.scriptConds[subjInfo.script];
-    console.log(storyCond);
-    var includedText = [];
-    phaseText.forEach(function(it) {
-	if ((it.cond == "na") || (it.cond == storyCond)) {
-	    includedText.push(it.text);
-	}
-    });
-    console.log(includedText)
-    $("#storyText").html(includedText.join("<br/>"));
 
     // advance phase, looping back to 0 and starting the next story if necessary
     if (currentPhase < 7) {
@@ -97,6 +107,38 @@ function resetDisplay(){
     });
 }
 
+function allowDrop(ev) {
+    // should add something here to make the border glow or something when you hover over
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var draggedItemId = ev.dataTransfer.getData("text");
+    console.log(draggedItemId, ev.target.id);
+    // for some reason the img is getting chosen as the target rather than the div. may need to
+    // put an overlapping div on top to catch the dragged item.
+    ev.target.appendChild(document.getElementById(draggedItemId));
+    recordResponse(draggedItemId, ev.target.id);
+    ev.dataTransfer.clearData();
+}
+
+function recordResponse(obj, target) {
+    var trialInfo = [subjInfo.subjId,
+		     subjInfo.date,
+		     subjInfo.script,
+		     stories[currentStory].storyId,
+		     phases[currentPhase],
+		     stories[currentStory].scriptConds[subjInfo.script],
+		     obj,
+		     target];
+    responses.push(trialInfo.toString());
+    console.log(responses);
+}
 
 // function drawScene(background, chars) {
 //     $("#characterCanvas").before(background);

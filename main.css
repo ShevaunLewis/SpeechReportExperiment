@@ -51,6 +51,7 @@ img.backgroundImg {
 img.charImg {
     height:100%;
     margin:auto;
+    z-index:0;
 }
 
 #narrator {
@@ -79,12 +80,16 @@ img.charImg {
     width: 67px;
     position: absolute;
     bottom: 20px;
-    left: 180px
+    left: 180px;
 }
 
 img.objImg {
     height: 100%;
     margin: auto;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
 }
 
 #narrTarget {
