@@ -29,14 +29,24 @@
 </div>
 
 <div class="display" id="main">
-  <img class="backgroundImg">
-  <div id="narrator" class="char"><img id="narrImg" class="charImg"></div>
-  <div id="char1" class="char"><img id="c1Img" class="charImg"></div>
-  <div id="char2" class="char"><img id="c2Img" class="charImg"></div>
-  <div id="narrTarget" class="target"></div>
-  <div id="c1Target" class="target"></div>
-  <div id="c2Target" class="target"></div>
-  <div id="objStart"><img id="objImg" class="objImg" draggable="true"></div>
+  <img class="backgroundImg" draggable="false">
+  <div id="narrator" class="char">
+    <img id="narrImg" class="fit" draggable="false">
+    <div class="dropSpot"></div>
+  </div>
+  <div id="c1" class="char">
+    <img id="c1Img" class="fit" draggable="false">
+    <div class="dropSpot"></div>
+  </div>
+  <div id="c2" class="char">
+    <img id="c2Img" class="fit" draggable="false">
+    <div class="dropSpot"></div>
+  </div>
+  <div id="objStart"></div>
+  <div id="takeGoal">
+    <img id="goalImg" class="fit" draggable="false">
+    <div class="dropSpot"></div>
+  </div>
 </div>
 
 <div class="display">

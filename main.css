@@ -26,83 +26,82 @@ fieldset {
 /* Specific to the Speech Reports webapp */
 
 .display {
-    width: 525px;
+    width: 1915px;
     margin-left: auto;
     margin-right: auto;
     position: relative;
 }
 
 #main {
-    height: 400px;
+    height: 1460px;
+}
+
+img.fit {
+    height: 100%;
+    margin: auto;
 }
 
 img.backgroundImg {
-    width:100%;
-    height:100%;
+    height: 100%;
+    width: 100%;
     position: absolute;
 }
 
-.char {
-    height: 150px;
-    width: 150px;
+div.char {
+    height: 423px;
+    width: 500px;
     position: absolute;
 }
-    
-img.charImg {
-    height:100%;
-    margin:auto;
-    z-index:0;
+
+div.dropSpot {
+    height: 200px;
+    width: 200px;
+    position: absolute;
+    z-index:1;
+}
+
+.char .dropSpot {
+    bottom: 100px;
+    right: 0;
 }
 
 #narrator {
-    top:200px;
-    left:50px;
+    bottom:100px;
+    left:100px;
 }
 
-#char1 {
-    top: 100px;
-    left: 180px;
+#c1 {
+    bottom: 400px;
+    left: 650px;
 }
 
-#char2 {
-    top: 200px;
-    right: 50px;
-}
-
-.target {
-    width: 67px;
-    height: 67px;
-    position: absolute;
+#c2 {
+    bottom: 100px;
+    left: 1200px;
 }
 
 #objStart {
-    height: 67px;
-    width: 67px;
+    height: 200px;
+    width: 200px;
     position: absolute;
-    bottom: 20px;
-    left: 180px;
+    bottom: 100px;
+    left: 850px;
 }
 
-img.objImg {
-    height: 100%;
-    margin: auto;
+#takeGoal {
+    height: 300px;
+    width: 300px;
     position: absolute;
-    bottom: 0;
-    right: 0;
-    z-index: 1;
+    top: 400px;
+    right: 50px;
+    z-index: 0;
 }
 
-#narrTarget {
-    top: 250px;
-    left: 200px;
+#goalImg {
+    right:0;
 }
 
-#c1Target {
-    top:150px;
-    left:330px;
-}
-
-#c2Target {
-    top:250px;
-    right:10px;
+#takeGoal .dropSpot {
+    top: 150px;
+    left: 0;
 }

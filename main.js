@@ -1,5 +1,5 @@
 var currentStory = 0;
-var currentPhase = 0;
+var currentPhase = -1;
 var phases = ["hi","scene1","give1","give2","scene2","take1","take2","end"];
 var subjInfo = {};
 var responses = [];
@@ -34,6 +34,13 @@ $("#nextButton").click(function(){
 });
 
 function updateDisplay(){
+    // advance phase, looping back to 0 and starting the next story if necessary
+    if (currentPhase < 7) {
+	currentPhase++;
+    } else if (currentStory < 7) {
+	currentStory++;
+	currentPhase = 0;
+    }
     updateStatus();
 
     // get current story object
@@ -49,17 +56,17 @@ function updateDisplay(){
 	}
     });
     $("#storyText").html(includedText.join("<br/>"));
-
-    // set trial info in case we need to store a response
  
     // update images depending on the phase of the story 
     switch(currentPhase) {
     case 0: //intro
 	if (currentStory > 0) {
-	    resetDisplay();
+	    resetBackground();
+	    resetObjs();
 	}
 	$(".backgroundImg").attr("src",imageFiles[story.bg1]);
 	$("#narrImg").attr("src",imageFiles[story.narrator]);
+	$("#main").children().fadeIn("fast");
 	break;
     case 1: //scene1
 	$("#narrImg").attr("src",imageFiles[story.narrator]);
@@ -67,74 +74,119 @@ function updateDisplay(){
 	$("#c2Img").attr("src",imageFiles[story.c2]);
 	break;
     case 2: //give1
-	// need to change this to add a new image to the div, rather than just
-	// change the source of an existing one (since this image will move)
-	$("#objImg").attr({
-	    "src" : imageFiles[story.giveObj1],
-	    "ondragstart" : "drag(event)"
-	});
-	$(".char").attr({
-	    "ondrop" : "drop(event)",
-	    "ondragover" : "allowDrop(event)"
-	});
+	addGiveObj("giveObj1",imageFiles[story.giveObj1]);
+	startDragging();
 	break;
     case 3: //give2
-	$("#objImg").attr("src",imageFiles[story.giveObj2]);
+	stopDragging();
+	addGiveObj("giveObj2",imageFiles[story.giveObj2]);
+	startDragging();
  	break;
     case 4: //scene2
+	stopDragging();
+	$(".dragObj").remove();
 	$(".backgroundImg").attr("src",imageFiles[story.bg2]);
+	addTakeObjs(imageFiles[story.takeObj],imageFiles[story.takeTarget]);
 	break;
-    }
-
-
-    // advance phase, looping back to 0 and starting the next story if necessary
-    if (currentPhase < 7) {
-	currentPhase++;
-    } else if (currentStory < 7) {
-	currentStory++;
-	currentPhase = 0;
-    }
+    case 5: //take1
+	startDragging();
+	$(".takeObjImg").attr("draggable","true");
+	break;
+    case 6: //take2
+	$("#takeTarget").children().attr("draggable","false");
+	break;
+    case 7: //end
+	$("#main").children().fadeOut("slow");
+    }    
 }
 
-function resetDisplay(){
+function addGiveObj(imgId,imgSrc) {
+    var obj = new Image();
+    obj.id = imgId;
+    $("#objStart").prepend(obj);
+    $("#" + imgId).attr({
+	"src" : imgSrc,
+	"class" : "dragObj",
+	"draggable" : "false",
+	"ondragstart" : "drag(event)"
+    });
+    $(".char").not(":has(.dragObj)").attr({
+	"ondragover" : "allowDrop(event)",
+	"ondrop" : "drop(event)"
+    });
+}
+
+function startDragging() {
+    $(".dragObj").attr("draggable","true");
+}
+
+function stopDragging() {
+    $(".dragObj").attr("draggable","false");
+    $("[ondragover]").removeAttr("ondragover","ondrop");
+}
+
+function addTakeObjs(objSrc,targetSrc) {
+    var obj = new Image();
+    obj.className ="dragObj";
+    $(".char .dropSpot").prepend(obj);
+    $(".dragObj").attr({
+	"src" : objSrc,
+	"draggable" : "false",
+	"ondragstart" : "drag(event)"
+    });
+    $("#goalImg").attr("src",targetSrc);
+    $("#takeGoal").attr({
+	"ondragover" : "allowDrop(event)",
+	"ondrop" : "drop(event)"
+    });
+}
+
+function resetBackground(){
     var displayImages = ["#backgroundImg","#narrImg","#c1Img","#c2Img"]
     displayImages.forEach(function(it) {
 	$(it).removeAttr("src");
     });
-    var displayContainers = ["#narrTarget","#c1Target","#c2Target","#objStart"];
-    displayContainers.forEach(function(it) {
-	$(it).empty();
-    });
+}
+
+function resetObjs(){
+    $(".dragObj").remove();
 }
 
 function allowDrop(ev) {
-    // should add something here to make the border glow or something when you hover over
     ev.preventDefault();
 }
 
 function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
+    //need to adjust to work for take objects coming from .dropSpots
+    ev.dataTransfer.setData("text", ev.target.parentElement.id);
+    $("[ondragover] img").css("border","medium dashed yellow");
 }
 
 function drop(ev) {
     ev.preventDefault();
-    var draggedItemId = ev.dataTransfer.getData("text");
-    console.log(draggedItemId, ev.target.id);
-    // for some reason the img is getting chosen as the target rather than the div. may need to
-    // put an overlapping div on top to catch the dragged item.
-    ev.target.appendChild(document.getElementById(draggedItemId));
-    recordResponse(draggedItemId, ev.target.id);
+
+    //collect drag information, record response
+    var draggedItemSource = ev.dataTransfer.getData("text");
     ev.dataTransfer.clearData();
+    var dropTarget = ev.currentTarget.id;
+    recordResponse(draggedItemSource, dropTarget);
+    
+    //add dropped image to the .dropSpot div
+    var draggedItem = $("#" + draggedItemSource).children()[0];
+    $("#" + dropTarget).children(".dropSpot").prepend(draggedItem);
+    
+    // get rid of border around potential targets
+    $("[ondragover] img").css("border","none");
 }
 
-function recordResponse(obj, target) {
+function recordResponse(objSource, target) {
     var trialInfo = [subjInfo.subjId,
 		     subjInfo.date,
 		     subjInfo.script,
 		     stories[currentStory].storyId,
 		     phases[currentPhase],
 		     stories[currentStory].scriptConds[subjInfo.script],
-		     obj,
+		     objSource,
 		     target];
     responses.push(trialInfo.toString());
     console.log(responses);
