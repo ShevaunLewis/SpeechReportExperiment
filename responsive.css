@@ -25,40 +25,28 @@ fieldset {
 
 /* Specific to the Speech Reports webapp */
 
-.display {
-    width: 100%;
-    margin: auto;
-}
-
 #main {
     position: relative;
 }
 
-img.fit {
-    height: 100%;
-    margin: auto;
+#backgroundImg {
+    width: 100%;
 }
 
-img.backgroundImg {
-    width: 100%;
+img:not(#backgroundImg) {
+    height: 100%;
 }
 
 div.char {
     height: 29%;
-    width: 26%;
     position: absolute;
 }
 
 div.dropSpot {
-    height: 14%;
-    width: 10%;
-    position: absolute;
+    height: 40%;
+    display: inline-block;
     z-index:1;
-}
-
-.char .dropSpot {
-    bottom: 24%;
-    right: 0;
+    margin-left: -10%;
 }
 
 #narrator {
@@ -78,26 +66,24 @@ div.dropSpot {
 
 #objStart {
     height: 14%;
-    width: 10%;
     position: absolute;
     bottom: 7%;
-    left: 49%;
+    left: 33%;
 }
 
 #takeGoal {
     height: 21%;
-    width: 21%;
     position: absolute;
     top: 28%;
     right: 4%;
     z-index: 0;
 }
 
-#goalImg {
-    right:0;
+#takeGoal .dropSpot {
+    margin-left: 0;
+    margin-right: -10%;
 }
 
-#takeGoal .dropSpot {
-    top: 75%;
-    left: 0;
+#takeGoal .dropSpot img {
+    display: block;
 }

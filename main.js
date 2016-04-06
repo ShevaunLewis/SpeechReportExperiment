@@ -85,7 +85,7 @@ function updateDisplay(){
 	    resetBackground();
 	    resetObjs();
 	}
-	$(".backgroundImg").attr("src",imageFiles[story.bg1]);
+	$("#backgroundImg").attr("src",imageFiles[story.bg1]);
 	$("#narrImg").attr("src",imageFiles[story.narrator]);
 	$("#main").children().fadeIn("fast");
 	break;
@@ -99,13 +99,12 @@ function updateDisplay(){
 	startDragging();
 	break;
     case 3: //give2
-	$("[ondragover]").removeAttr("ondragover","ondrop");
 	addGiveObj("giveObj2",imageFiles[story.giveObj2]);
 	startDragging();
  	break;
     case 4: //scene2
 	$(".dragObj").remove();
-	$(".backgroundImg").attr("src",imageFiles[story.bg2]);
+	$("#backgroundImg").attr("src",imageFiles[story.bg2]);
 	addTakeObjs(imageFiles[story.takeObj],imageFiles[story.takeTarget]);
 	break;
     case 5: //take1
@@ -131,6 +130,8 @@ function addGiveObj(imgId,imgSrc) {
 	"draggable" : "false",
 	"ondragstart" : "drag(event)"
     });
+    
+    $("[ondragover]").removeAttr("ondragover","ondrop");
     $(".char").not(":has(.dragObj)").attr({
 	"ondragover" : "allowDrop(event)",
 	"ondrop" : "drop(event)"
@@ -155,6 +156,7 @@ function addTakeObjs(objSrc,targetSrc) {
 	"ondragstart" : "drag(event)"
     });
     $("#goalImg").attr("src",targetSrc);
+    $("[ondragover]").removeAttr("ondragover","ondrop");
     $("#takeGoal").attr({
 	"ondragover" : "allowDrop(event)",
 	"ondrop" : "drop(event)"
@@ -186,7 +188,7 @@ function drag(ev) {
     ev.dataTransfer.setData("text", source);
     
     // highlight potential targets with yellow dashed border
-    $("[ondragover] img").css("border","medium dashed yellow");
+    $("[ondragover]>img").css("border","medium dashed yellow");
 }
 
 function drop(ev) {
