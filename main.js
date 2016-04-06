@@ -6,24 +6,24 @@ var responses = [];
 
 // keyboard shortcuts
 $(document).keydown(function(event) {
-    console.log(event);
     keyboardAction(event.which)
 });
 
 function keyboardAction(key) {
     if (key == 78) { //n
-	updateDisplay();
+	advanceStory();
     } else if ((key >= 49 && key <= 56)) { //1-8
 	goToStory(key-49);
+    } else if (key == 69) { //e
+	endExperiment();
     }
 }
 
 function goToStory(storyIndex) {
     currentStory = storyIndex;
-    currentPhase = -1;
+    currentPhase = 0;
     updateDisplay();
-}
-	   
+}	   
 
 // Collect subject information from form on start page
 $("#submitForm").click(saveSubjInfo);
@@ -43,25 +43,32 @@ function saveSubjInfo() {
 			"         Script: " + subjInfo.script);
 
     // Start display of first story
-    updateDisplay();
+    advanceStory();
 }
 
 function updateStatus() {
     $("#expStatus").html("Story: " + stories[currentStory].storyId + "   Phase: " + phases[currentPhase]);
 }
 
-$("#nextButton").click(function(){
-    updateDisplay();
-});
+$("#nextButton").click(advanceStory);
 
-function updateDisplay(){
+function advanceStory(){
     // advance phase, looping back to 0 and starting the next story if necessary
     if (currentPhase < 7) {
 	currentPhase++;
+	updateDisplay();
     } else if (currentStory < 7) {
 	currentStory++;
 	currentPhase = 0;
+	updateDisplay();
     }
+    else {
+	endExperiment();
+    }
+}
+
+function updateDisplay(){
+    
     updateStatus();
 
     // get current story object
@@ -220,25 +227,26 @@ function recordResponse(objSource, target) {
 		     stories[currentStory].scriptConds[subjInfo.script],
 		     objSource,
 		     target];
-    responses.push(trialInfo.toString());
+    responses.push(trialInfo);
     console.log(responses);
 }
 
-// function drawScene(background, chars) {
-//     $("#characterCanvas").before(background);
-//     var images = new Array();
-//     var loadedImages = 0;
-//     for (var c in chars) {
-//         images[c] = new Image();
-//         images[c].src = chars[c].imgSrc;
-//         images[c].onload = function() {
-//             if (++loadedImages >= chars.length) {
-//                 for (var i in images) {
-//                     character = chars[i];
-//                     characterContext.drawImage(images[i], character.x, character.y, character.width, character.height);
-//                 }
-//             }
-//         };
-//     }
-// }
+function endExperiment() {
+    $("#expStatus").html("Done");
+    $("#storyText").remove();
+    $("#main").html("<button id='resultsButton'>Get results!</button>");
+    $("#resultsButton").click(writeResults);
+}
 
+function writeResults() {
+    var csv = Papa.unparse({
+	fields: ["subjId","date","script","storyId","phase","cond","objSource","target"],
+	data: responses
+    });
+    var encodedUri = encodeURI(csv);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    var filename = "SR_" + subjInfo.subjId + ".csv";
+    link.setAttribute("download", filename);
+    link.click();
+}

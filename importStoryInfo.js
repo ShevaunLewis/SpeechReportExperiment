@@ -62,8 +62,7 @@ Papa.parse("expInfo/scripts.csv", {
     complete: function(results) {
 	var scripts = results.data;
 	stories.forEach(function (it) {
-	    it.scriptConds = scripts[it.storyId];
+	    it.scriptConds = scripts[it.storyId-1];
 	});
     }
 });
-	
