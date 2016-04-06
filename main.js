@@ -4,6 +4,27 @@ var phases = ["hi","scene1","give1","give2","scene2","take1","take2","end"];
 var subjInfo = {};
 var responses = [];
 
+// keyboard shortcuts
+$(document).keydown(function(event) {
+    console.log(event);
+    keyboardAction(event.which)
+});
+
+function keyboardAction(key) {
+    if (key == 78) { //n
+	updateDisplay();
+    } else if ((key >= 49 && key <= 56)) { //1-8
+	goToStory(key-49);
+    }
+}
+
+function goToStory(storyIndex) {
+    currentStory = storyIndex;
+    currentPhase = -1;
+    updateDisplay();
+}
+	   
+
 // Collect subject information from form on start page
 $("#submitForm").click(saveSubjInfo);
 
@@ -78,12 +99,11 @@ function updateDisplay(){
 	startDragging();
 	break;
     case 3: //give2
-	stopDragging();
+	$("[ondragover]").removeAttr("ondragover","ondrop");
 	addGiveObj("giveObj2",imageFiles[story.giveObj2]);
 	startDragging();
  	break;
     case 4: //scene2
-	stopDragging();
 	$(".dragObj").remove();
 	$(".backgroundImg").attr("src",imageFiles[story.bg2]);
 	addTakeObjs(imageFiles[story.takeObj],imageFiles[story.takeTarget]);
@@ -93,6 +113,7 @@ function updateDisplay(){
 	$(".takeObjImg").attr("draggable","true");
 	break;
     case 6: //take2
+	startDragging();
 	$("#takeTarget").children().attr("draggable","false");
 	break;
     case 7: //end
@@ -122,7 +143,6 @@ function startDragging() {
 
 function stopDragging() {
     $(".dragObj").attr("draggable","false");
-    $("[ondragover]").removeAttr("ondragover","ondrop");
 }
 
 function addTakeObjs(objSrc,targetSrc) {
@@ -142,7 +162,7 @@ function addTakeObjs(objSrc,targetSrc) {
 }
 
 function resetBackground(){
-    var displayImages = ["#backgroundImg","#narrImg","#c1Img","#c2Img"]
+    var displayImages = ["#backgroundImg","#narrImg","#c1Img","#c2Img","#goalImg"]
     displayImages.forEach(function(it) {
 	$(it).removeAttr("src");
     });
@@ -157,8 +177,15 @@ function allowDrop(ev) {
 }
 
 function drag(ev) {
-    //need to adjust to work for take objects coming from .dropSpots
-    ev.dataTransfer.setData("text", ev.target.parentElement.id);
+    // source is the first ancestor that has an id (parent for give drags,
+    // grandparent for take drags
+    var source = ev.target.parentElement.id;
+    if (source == "") {
+	source = ev.target.parentElement.parentElement.id;
+    }	
+    ev.dataTransfer.setData("text", source);
+    
+    // highlight potential targets with yellow dashed border
     $("[ondragover] img").css("border","medium dashed yellow");
 }
 
@@ -172,11 +199,14 @@ function drop(ev) {
     recordResponse(draggedItemSource, dropTarget);
     
     //add dropped image to the .dropSpot div
-    var draggedItem = $("#" + draggedItemSource).children()[0];
-    $("#" + dropTarget).children(".dropSpot").prepend(draggedItem);
+    var draggedItem = $("#" + draggedItemSource + " .dragObj");
+    $("#" + dropTarget + " .dropSpot").prepend(draggedItem);
     
     // get rid of border around potential targets
     $("[ondragover] img").css("border","none");
+
+    // prevent additional dragging
+    stopDragging();
 }
 
 function recordResponse(objSource, target) {

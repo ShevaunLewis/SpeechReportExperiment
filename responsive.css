@@ -1,0 +1,103 @@
+/*
+ * Remove the gap between audio, canvas, iframes,
+ * images, videos and the bottom of their containers:
+ * https://github.com/h5bp/html5-boilerplate/issues/440
+ */
+
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+    vertical-align: middle;
+}
+
+/*
+ * Remove default fieldset styles.
+ */
+
+fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Specific to the Speech Reports webapp */
+
+.display {
+    width: 100%;
+    margin: auto;
+}
+
+#main {
+    position: relative;
+}
+
+img.fit {
+    height: 100%;
+    margin: auto;
+}
+
+img.backgroundImg {
+    width: 100%;
+}
+
+div.char {
+    height: 29%;
+    width: 26%;
+    position: absolute;
+}
+
+div.dropSpot {
+    height: 14%;
+    width: 10%;
+    position: absolute;
+    z-index:1;
+}
+
+.char .dropSpot {
+    bottom: 24%;
+    right: 0;
+}
+
+#narrator {
+    bottom:7%;
+    left:5%;
+}
+
+#c1 {
+    bottom: 28%;
+    left: 33%;
+}
+
+#c2 {
+    bottom: 7%;
+    left: 60%;
+}
+
+#objStart {
+    height: 14%;
+    width: 10%;
+    position: absolute;
+    bottom: 7%;
+    left: 49%;
+}
+
+#takeGoal {
+    height: 21%;
+    width: 21%;
+    position: absolute;
+    top: 28%;
+    right: 4%;
+    z-index: 0;
+}
+
+#goalImg {
+    right:0;
+}
+
+#takeGoal .dropSpot {
+    top: 75%;
+    left: 0;
+}
