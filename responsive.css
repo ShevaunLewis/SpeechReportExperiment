@@ -25,7 +25,8 @@ fieldset {
 
 /* Specific to the Speech Reports webapp */
 
-#main {
+
+#page {
     position: relative;
 }
 
@@ -72,9 +73,9 @@ div.dropSpot {
 }
 
 #takeGoal {
-    height: 21%;
+    height: 25%;
     position: absolute;
-    top: 28%;
+    top: 40%;
     right: 4%;
     z-index: 0;
 }
@@ -86,4 +87,8 @@ div.dropSpot {
 
 #takeGoal .dropSpot img {
     display: block;
+}
+
+.dragObj {
+    z-index: 1;
 }

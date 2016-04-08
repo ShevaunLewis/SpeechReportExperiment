@@ -17,6 +17,13 @@ function keyboardAction(key) {
 	goToStory(key-49);
     } else if (key == 69) { //e
 	endExperiment();
+    } else if (key == 32) {//spacebar
+	var audio = document.getElementById("narrationAudio");
+	if (audio.paused) {
+	    audio.play();
+	} else {
+	    audio.pause();
+	}
     }
 }
 
@@ -25,6 +32,7 @@ function goToStory(storyIndex) {
     currentPhase = 0;
     updateDisplay();
 }	   
+
 
 // Collect subject information from form on start page
 $("#submitForm").click(saveSubjInfo);
@@ -48,7 +56,8 @@ function saveSubjInfo() {
 }
 
 function updateStatus() {
-    $("#expStatus").html("Story: " + stories[currentStory].storyId + "   Phase: " + phases[currentPhase]);
+    $("#expStatus").html("       Story: " + stories[currentStory].storyId +
+			 "   Phase: " + phases[currentPhase]);
 }
 
 $("#nextButton").click(advanceStory);
@@ -108,7 +117,7 @@ function updateVisuals(story, phase) {
 	//show narrator
 	$("#backgroundImg").attr("src",imageFiles[story.bg1]);
 	$("#narrImg").attr("src",imageFiles[story.narrator]);
-	$("#main").children().fadeIn("fast");
+	$("#page").children().fadeIn("fast");
 	break;
 
     case "friends":
@@ -140,8 +149,13 @@ function updateVisuals(story, phase) {
 	addDropTargets("#goalImg");
 	break;
 
+    case "take1":
+	$(".char").droppable("destroy");
+	break;
+
     case "take2":
 	$("#goalImg").droppable("enable");
+	break;
 
     case "end":
 	$("#main").fadeOut("slow");
@@ -182,6 +196,9 @@ function addDropTargets(targetSelector) {
 	
 function drop(ev, ui) {
     var source = ui.draggable[0].parentElement.id;
+    if (source == "") {
+	source = ui.draggable[0].parentElement.parentElement.id;
+    }
     var target = ev.target.id;
     recordResponse(source, target);
     

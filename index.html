@@ -7,29 +7,43 @@
   <title>Speech Report Experiment</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-height, initial-scale=1.0">
-  <link rel="stylesheet" href="responsive.css">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <script src="jsPkg/jquery-1.12.0.min.js"></script>
   <script src="jsPkg/papaparse.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script src="jsPkg/jquery.ui.touch-punch.min.js"></script>
+  <link rel="stylesheet" href="responsive.css">
+  <script src="initialize.js"></script>
 </head>
 
 <body>
 
-<div id="subjForm">
-  Subject ID: <input type="text" id="subjID" size="3"><br/>
-  Date: <input type="datetime-local" id="date"><br/>
-  Script: <input type="radio" id="script" value="a" checked> A 
-  <input type="radio" id="script" value="b"> B 
-  <input type="radio" id="script" value="block-i"> Block-I 
-  <input type="radio" id="script" value="block-d"> Block-D<br/>
-  <button id="submitForm">Submit</button>
+<form id="subjForm">
+ <p>Subject ID: <input type="text" id="subjID" size="3"><br/>
+ <p> Date: <input type="text" id="date"></p>
+ Script:
+  <div id="script" style="display:inline-block;">
+    <input type="radio" name="script" id="scriptA" value="a">
+      <label for="scriptA">A</label> 
+    <input type="radio" name="script" id="scriptB" value="b">
+      <label for="scriptB">B</label>
+    <input type="radio" name="script" id="scriptI" value="block-i">
+      <label for="scriptI">Block-I</label> 
+    <input type="radio" name="script" id="scriptD" value="block-d">
+      <label for="scriptD">Block-D</label>
+  </div>
+  <p><button id="submitForm">Submit</button></p>
+</form>
+
+<div id="mainDisplay">
+  
+<div id="statusBar">
+  <span id="subjInfo"></span>
+  <span id="expStatus"></span>
+  <hr/>
 </div>
 
-<div>
-  <p id="subjInfo"></p>
-</div>
-
-<div id="main">
+<div id="page">
   <img id="backgroundImg" draggable="false">
   <div id="narrator" class="char">
     <img id="narrImg" draggable="false">
@@ -51,19 +65,13 @@
 </div>
 
 <div>
-  <p id="storyText"></p>
-  <audio controls autoplay id="narrationAudio"></audio>
+  <audio autoplay id="narrationAudio"></audio>
+  <span id="storyText"></span>
 </div>
 
-<div class="display">
-  <hr/>
-  <button id="nextButton">Next</button>
-  <span id="expStatus">Collecting subject info</span>
 </div>
 
-
-<!-- <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-<!-- <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.12.0.min.js"><\/script>')</script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script> -->
 
 <script src="importStoryInfo.js"></script>
 <script src="main.js"></script>

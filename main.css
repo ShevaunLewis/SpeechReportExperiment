@@ -65,10 +65,6 @@ div.dropSpot {
     right: 0;
 }
 
-.dropTarget {
-    border: medium dashed yellow;
-}
-
 #narrator {
     bottom:100px;
     left:100px;
