@@ -1,12 +1,11 @@
 // Make stuff pretty
 $(function() {
     $("#script").buttonset();
-});
-
-$(function() {
     $("#date").datepicker();
+    $("button").button();
 });
 
-$(function() {
-    $("button").button();
+// hide mainDisplay
+$(document).ready(function(){
+    $("#mainDisplay").hide();
 });

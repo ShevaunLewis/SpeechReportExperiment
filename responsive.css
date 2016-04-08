@@ -26,7 +26,7 @@ fieldset {
 /* Specific to the Speech Reports webapp */
 
 
-#page {
+.page {
     position: relative;
 }
 

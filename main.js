@@ -30,7 +30,7 @@ function keyboardAction(key) {
 function goToStory(storyIndex) {
     currentStory = storyIndex;
     currentPhase = 0;
-    updateDisplay();
+    playStory();
 }	   
 
 
@@ -45,6 +45,8 @@ function saveSubjInfo() {
 
     // get rid of form
     $("#subjForm").remove();
+
+    $("#mainDisplay").show();
     
     // Update subject info at top of page
     $("#subjInfo").html("Subj: " + subjInfo.subjId +
@@ -61,6 +63,27 @@ function updateStatus() {
 }
 
 $("#nextButton").click(advanceStory);
+
+// button navigation
+$("#bb-nav-next").on("click touchstart", function() {
+    $(".bb-bookblock").bookblock("next");
+});
+
+$("#bb-nav-prev").on("click touchstart", function() {
+    $(".bb-bookblock").bookblock("prev");
+});
+
+// swipe navigation
+var $slides = $(".bb-bookblock").children();
+
+$slides.on( {
+    "swipeleft" : function(event) {
+	$(".bb-bookblock").bookblock("next");
+    },
+    "swiperight" : function(event) {
+	$(".bb-bookblock").bookblock("prev");
+    }
+});
 
 function advanceStory(){
     // advance phase, looping back to 0 and starting the next story if necessary
@@ -103,6 +126,13 @@ function updateNarration(story, phase, cond) {
     $("#storyText").html(narr.text);
     $("#narrationAudio").attr("src", narr.audio);
 }
+
+function setVisuals(story) {
+    $("#title h1").text(story.title);
+    $("#backgroundImg").attr("src",imageFiles[story.bg1]);
+    $("#narrImg").attr("src",imageFiles[story.narrator]);
+
+    
 
 function updateVisuals(story, phase) {
     updateStatus();

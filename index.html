@@ -8,10 +8,12 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-height, initial-scale=1.0">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-  <script src="jsPkg/jquery-1.12.0.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
   <script src="jsPkg/papaparse.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
   <script src="jsPkg/jquery.ui.touch-punch.min.js"></script>
+  <script src="jsPkg/bookblock.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="responsive.css">
   <script src="initialize.js"></script>
 </head>
@@ -43,31 +45,54 @@
   <hr/>
 </div>
 
-<div id="page">
-  <img id="backgroundImg" draggable="false">
-  <div id="narrator" class="char">
-    <img id="narrImg" draggable="false">
-    <div class="dropSpot"></div>
-  </div>
-  <div id="c1" class="char">
-    <img id="c1Img" draggable="false">
-    <div class="dropSpot"></div>
-  </div>
-  <div id="c2" class="char">
-    <img id="c2Img" draggable="false">
-    <div class="dropSpot"></div>
-  </div>
-  <div id="objStart"></div>
-  <div id="takeGoal">
-    <div class="dropSpot"></div>
-    <img id="goalImg" draggable="false">
-  </div>
+<div class="bb-bookblock">
+  <div id="title" class="page bb-item"><h1></h1></div>
+  <div id="intro" class="page bb-item">
+      <div id="narrator" class="char">
+      <img id="narrImg" draggable="false">
 </div>
-
+  <div id="scene1" class="page bb-item">
+    <img id="backgroundImg" draggable="false">
+    <div id="narrator" class="char">
+      <img id="narrImg" draggable="false">
+    </div>
+    <div id="c1" class="char">
+      <img id="c1Img" draggable="false">
+    </div>
+    <div id="c2" class="char">
+      <img id="c2Img" draggable="false">
+    </div>
+    <div id="objStart"></div>
+  </div>
+  <div id="scene2" class="page bb-item">
+    <img id="backgroundImg" draggable="false">
+    <div id="narrator" class="char">
+      <img id="narrImg" draggable="false">
+      <div class="takeObj"></div>
+    </div>
+    <div id="c1" class="char">
+      <img id="c1Img" draggable="false">
+      <div class="takeObj"></div>
+    </div>
+    <div id="c2" class="char">
+      <img id="c2Img" draggable="false">
+      <div class="takeObj"></div>
+    </div>
+    <div id="takeGoal">
+      <img id="goalImg" draggable="false">
+    </div>
+  <div id="end" class="page bb-item"></div>
+</div>
 <div>
   <audio autoplay id="narrationAudio"></audio>
   <span id="storyText"></span>
 </div>
+
+<div>
+  <button id="bb-nav-prev"><i class="fa fa-arrow-left fa-lg"></i></button>
+  <button id="bb-nav-next"><i class="fa fa-arrow-right fa-lg"></i></button>
+</div>
+
 
 </div>
 
