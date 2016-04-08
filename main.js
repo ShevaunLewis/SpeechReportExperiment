@@ -72,23 +72,14 @@ function playStory() {
     var story = stories[currentStory];
     var phase = phases[currentPhase];
     var cond = story.scriptConds[subjInfo.script];
-    
-    switch(phase) {
-    case ("give1" || "give2"):
-	$("#narrationAudio").attr("onended", "startDragging()");
-	updateVisuals(story, phase);
-	updateNarration(story, phase, cond);
-	break;
 
-    case ("take1" || "take2"):
+    if (["give1","give2","take1","take2"].indexOf(phase) > -1) {
 	$("#narrationAudio").attr("onended", "startDragging()");
-	break;
-
-    default:
+    } else {
 	$("#narrationAudio").attr("onended", "advanceStory()");
-	updateVisuals(story, phase);
-	updateNarration(story, phase, cond);
     }
+    updateVisuals(story, phase);
+    updateNarration(story, phase, cond);
 }
 
 function updateNarration(story, phase, cond) {
@@ -129,10 +120,11 @@ function updateVisuals(story, phase) {
     case "give1":
 	//show give1Obj
 	addGiveObj("giveObj1",imageFiles[story.giveObj1]);
+	addDropTargets(".char");
 	break;
 	
     case "give2":
-	addGiveObj("giveObj1",imageFiles[story.giveObj1]);
+	addGiveObj("giveObj2",imageFiles[story.giveObj2]);
 	break;
 
     case "distribute":
@@ -144,8 +136,12 @@ function updateVisuals(story, phase) {
 
     case "decide2":
 	// add goal object
-	addGoalObj(imageFiles[story.takeTarget]);
+	$("#goalImg").attr("src",imageFiles[story.takeTarget]);
+	addDropTargets("#goalImg");
 	break;
+
+    case "take2":
+	$("#goalImg").droppable("enable");
 
     case "end":
 	$("#main").fadeOut("slow");
@@ -158,45 +154,50 @@ function addGiveObj(imgId,imgSrc) {
     $("#objStart").prepend(obj);
     $("#" + imgId).attr({
 	"src" : imgSrc,
-	"class" : "dragObj",
-	"draggable" : "false",
-	"ondragstart" : "drag(event)"
+	"class" : "dragObj"
     });
-    
-    $("[ondragover]").removeAttr("ondragover","ondrop");
-    $(".char").not(":has(.dragObj)").attr({
-	"ondragover" : "allowDrop(event)",
-	"ondrop" : "drop(event)"
-    });
-}
-
-function startDragging() {
-    $(".dragObj").attr("draggable","true");
-}
-
-function stopDragging() {
-    $(".dragObj").attr("draggable","false");
 }
 
 function addTakeObjs(objSrc) {
     var obj = new Image();
     obj.className ="dragObj";
     $(".char .dropSpot").prepend(obj);
-    $(".dragObj").attr({
-	"src" : objSrc,
-	"draggable" : "false",
-	"ondragstart" : "drag(event)"
-    });
+    $(".dragObj").attr("src", objSrc);
 }
 
-function addGoalObj(targetSrc) {
-    $("#goalImg").attr("src",targetSrc);
-    $("[ondragover]").removeAttr("ondragover","ondrop");
-    $("#takeGoal").attr({
-	"ondragover" : "allowDrop(event)",
-	"ondrop" : "drop(event)"
+function addDropTargets(targetSelector) {
+    $(targetSelector).droppable({
+	accept: ".dragObj",
+	activate: function (event, ui) {
+	    $("#" + event.target.id).css("border","medium dashed yellow");
+	},
+	deactivate: function ( event, ui) {
+	    $("#" + event.target.id).css("border","none");
+	},
+	drop: function(event, ui) {
+	    drop(event, ui);
+	}
     });
 }
+	
+function drop(ev, ui) {
+    var source = ui.draggable[0].parentElement.id;
+    var target = ev.target.id;
+    recordResponse(source, target);
+    
+    $(".dragObj").draggable("destroy");
+    $("#" + ev.target.id).css("border","none");
+    $("#" + ev.target.id).droppable("disable");
+}
+
+    
+function startDragging() {
+    $(".dragObj").draggable({
+	containment: "document",
+	revert: "invalid"
+    });
+}					      
+
 
 function resetBackground(){
     var displayImages = ["#backgroundImg","#narrImg","#c1Img","#c2Img","#goalImg"]
@@ -207,44 +208,6 @@ function resetBackground(){
 
 function resetObjs(){
     $(".dragObj").remove();
-}
-
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-function drag(ev) {
-    // source is the first ancestor that has an id (parent for give drags,
-    // grandparent for take drags
-    var source = ev.target.parentElement.id;
-    if (source == "") {
-	source = ev.target.parentElement.parentElement.id;
-    }	
-    ev.dataTransfer.setData("text", source);
-    
-    // highlight potential targets with yellow dashed border
-    $("[ondragover]>img").css("border","medium dashed yellow");
-}
-
-function drop(ev) {
-    ev.preventDefault();
-
-    //collect drag information, record response
-    var draggedItemSource = ev.dataTransfer.getData("text");
-    ev.dataTransfer.clearData();
-    var dropTarget = ev.currentTarget.id;
-    recordResponse(draggedItemSource, dropTarget);
-    
-    //add dropped image to the .dropSpot div
-    var draggedItem = $("#" + draggedItemSource + " .dragObj");
-    $("#" + dropTarget + " .dropSpot").prepend(draggedItem);
-    
-    // get rid of border around potential targets
-    $("[ondragover] img").css("border","none");
-
-    // prevent additional dragging
-    stopDragging();
-    advanceStory();
 }
 
 function recordResponse(objSource, target) {
@@ -279,74 +242,3 @@ function writeResults() {
     link.setAttribute("download", filename);
     link.click();
 }
-
-
-
-
-
-// function updateDisplay(){
-    
-//     updateStatus();
-
-//     // get current story object and phase name
-//     var story = stories[currentStory];
-//     var phase = phases[currentPhase];
-
-//     // get narration for each step of the phase
-//     var phaseNarration = getPhaseNarration(story, phase);
-
-//     // update images depending on the phase, one step at a time 
-//     switch(phase) {
-//     case "hi":
-// 	//make sure the slate is clean
-// 	resetBackground();
-// 	resetObjs();
-
-// 	//show narrator
-// 	$("#backgroundImg").attr("src",imageFiles[story.bg1]);
-// 	$("#narrImg").attr("src",imageFiles[story.narrator]);
-// 	$("#main").children().fadeIn("fast");
-
-// 	//show text and play narration
-// 	updateNarration(phaseNarration, 1);
-// 	break;
-
-//     case "give1":
-// 	$("#narrImg").attr("src",imageFiles[story.narrator]);
-// 	$("#c1Img").attr("src",imageFiles[story.c1]);
-// 	$("#c2Img").attr("src",imageFiles[story.c2]);
-// 	break;
-//     case 2: //give1
-// 	addGiveObj("giveObj1",imageFiles[story.giveObj1]);
-// 	startDragging();
-// 	break;
-//     case 3: //give2
-// 	addGiveObj("giveObj2",imageFiles[story.giveObj2]);
-// 	startDragging();
-//  	break;
-//     case 4: //scene2
-// 	$(".dragObj").remove();
-// 	$("#backgroundImg").attr("src",imageFiles[story.bg2]);
-// 	addTakeObjs(imageFiles[story.takeObj],imageFiles[story.takeTarget]);
-// 	break;
-//     case 5: //take1
-// 	startDragging();
-// 	$(".takeObjImg").attr("draggable","true");
-// 	break;
-//     case 6: //take2
-// 	startDragging();
-// 	$("#takeTarget").children().attr("draggable","false");
-// 	break;
-//     case 7: //end
-// 	$("#main").children().fadeOut("slow");
-//     }
-
-//     // update audio depending on the phase and condition
-//     var phaseAudio;
-//     if ("na" in story.audio[phases[currentPhase]]) {
-// 	phaseAudio = story.audio[phases[currentPhase]]["na"];
-//     } else {
-// 	phaseAudio = story.audio[phases[currentPhase]][storyCond];
-//     }
-//     $("#narrationAudio").attr("src",phaseAudio);
-// }
