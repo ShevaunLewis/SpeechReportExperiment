@@ -10,14 +10,29 @@
   <meta name="author" content="Shevaun Lewis" />
   <link rel="stylesheet" type="text/css" href="responsive.css" />
   <link rel="stylesheet" type="text/css" href="bookblock.css" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="responsive.css" />
   <script src="jsPkg/modernizr.custom.js"></script>
-  <script src="jsPkg/papaparse.min.js"></script>
-  <script src="importStoryInfo.js"></script>
  </head>
 
 <body>
+<form id="subjForm">
+ <p>Subject ID: <input type="text" id="subjID" size="3"><br/>
+ <p> Date: <input type="text" id="date"></p>
+ Script:
+  <div id="script" style="display:inline-block;">
+    <input type="radio" name="script" id="scriptA" value="a">
+      <label for="scriptA">A</label>
+    <input type="radio" name="script" id="scriptB" value="b">
+      <label for="scriptB">B</label>
+    <input type="radio" name="script" id="scriptI" value="block-i">
+      <label for="scriptI">Block-I</label>
+    <input type="radio" name="script" id="scriptD" value="block-d">
+      <label for="scriptD">Block-D</label>
+  </div>
+  <p><button id="submitForm">Submit</button></p>
+</form>
 
 <div class="book">
   <div id="bb-bookblock" class="bb-bookblock">
@@ -25,6 +40,7 @@
   <div id="intro" class="bb-item">
     <div style="width:100%, height:100%"></div>
     <div id="introNarr"><img draggable="false"></div>
+    <audio autoplay class="narrationAudio"></audio>
   </div>
 
   <div id = "scene1" class="bb-item">
@@ -38,6 +54,7 @@
     <div class="char c2">
       <img draggable="false">
     </div>
+    <audio autoplay class="narrationAudio"></audio>
   </div>
 
   <div id="scene2" class="page bb-item">
@@ -64,8 +81,12 @@
   </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="jsPkg/jquerypp.custom.js"></script>
 <script src="jsPkg/jquery.bookblock.min.js"></script>
+<script src="jsPkg/papaparse.min.js"></script>
+<script src="importStoryInfo.js"></script>
+<script src="initialize.js"></script>
 <script src="main.js"></script>
 </body>
 </html>

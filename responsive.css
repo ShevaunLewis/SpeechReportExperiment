@@ -32,7 +32,7 @@ fieldset {
 	text-align: center;
 }
 
-img:not(.backgroundImg) {
+img {
     height: 100%;
 }
 
