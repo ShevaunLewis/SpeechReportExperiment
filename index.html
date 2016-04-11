@@ -9,10 +9,12 @@
   <meta name="viewport" content="width=device-height, initial-scale=1.0">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script src="jsPkg/modernizr-2.8.3.min.js"></script>
   <script src="jsPkg/papaparse.min.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
   <script src="jsPkg/jquery.ui.touch-punch.min.js"></script>
-  <script src="jsPkg/bookblock.min.js"></script>
+  <script src="jsPkg/jquerypp.custom.js"></script>
+  <script src="jsPkg/jquery.bookblock.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="responsive.css">
   <script src="initialize.js"></script>
@@ -26,11 +28,11 @@
  Script:
   <div id="script" style="display:inline-block;">
     <input type="radio" name="script" id="scriptA" value="a">
-      <label for="scriptA">A</label> 
+      <label for="scriptA">A</label>
     <input type="radio" name="script" id="scriptB" value="b">
       <label for="scriptB">B</label>
     <input type="radio" name="script" id="scriptI" value="block-i">
-      <label for="scriptI">Block-I</label> 
+      <label for="scriptI">Block-I</label>
     <input type="radio" name="script" id="scriptD" value="block-d">
       <label for="scriptD">Block-D</label>
   </div>
@@ -38,54 +40,60 @@
 </form>
 
 <div id="mainDisplay">
-  
+
 <div id="statusBar">
   <span id="subjInfo"></span>
   <span id="expStatus"></span>
   <hr/>
 </div>
 
-<div class="bb-bookblock">
-  <div id="title" class="page bb-item"><h1></h1></div>
+<div id="bb-bookblock" class="bb-bookblock">
+
   <div id="intro" class="page bb-item">
-      <div id="narrator" class="char">
-      <img id="narrImg" draggable="false">
-</div>
+    <div id="introNarr"><img draggable="false"></div>
+    <audio class="narrationAudio"></audio>
+  </div>
+
   <div id="scene1" class="page bb-item">
-    <img id="backgroundImg" draggable="false">
-    <div id="narrator" class="char">
-      <img id="narrImg" draggable="false">
+    <img class="backgroundImg" draggable="false">
+    <div class="char narrator">
+      <img draggable="false">
     </div>
-    <div id="c1" class="char">
-      <img id="c1Img" draggable="false">
+    <div class="char c1">
+      <img draggable="false">
     </div>
-    <div id="c2" class="char">
-      <img id="c2Img" draggable="false">
+    <div class="char c2">
+      <img draggable="false">
     </div>
     <div id="objStart"></div>
+<!--
+    <button class="doneButton"><i class="fa fa-check-circle fa-5x"></i></button>
+ -->
+    <audio class="narrationAudio"></audio>
   </div>
+
   <div id="scene2" class="page bb-item">
     <img id="backgroundImg" draggable="false">
-    <div id="narrator" class="char">
-      <img id="narrImg" draggable="false">
-      <div class="takeObj"></div>
+    <div class="char narrator">
+      <img draggable="false">
     </div>
-    <div id="c1" class="char">
-      <img id="c1Img" draggable="false">
-      <div class="takeObj"></div>
+    <div class="char c1">
+      <img draggable="false">
     </div>
-    <div id="c2" class="char">
-      <img id="c2Img" draggable="false">
-      <div class="takeObj"></div>
+    <div class="char c2">
+      <img draggable="false">
     </div>
     <div id="takeGoal">
       <img id="goalImg" draggable="false">
     </div>
+<!--
+    <button class="doneButton"><i class="fa fa-check-circle fa-5x"></i></button>
+ -->
+    <audio class="narrationAudio"></audio>
+  </div>
+
   <div id="end" class="page bb-item"></div>
-</div>
-<div>
-  <audio autoplay id="narrationAudio"></audio>
-  <span id="storyText"></span>
+  <audio class="narrationAudio"></audio>
 </div>
 
 <div>

@@ -25,16 +25,14 @@ fieldset {
 
 /* Specific to the Speech Reports webapp */
 
-
-.page {
-    position: relative;
+.book {
+	position: relative;
+	height: 90vh;
+	margin: auto;
+	text-align: center;
 }
 
-#backgroundImg {
-    width: 100%;
-}
-
-img:not(#backgroundImg) {
+img:not(.backgroundImg) {
     height: 100%;
 }
 
@@ -50,17 +48,24 @@ div.dropSpot {
     margin-left: -10%;
 }
 
-#narrator {
+#introNarr {
+    position: absolute;
+    height: 40%;
+    bottom: 10%;
+    left: 40%;
+}
+
+.narrator {
     bottom:7%;
     left:5%;
 }
 
-#c1 {
+.c1 {
     bottom: 28%;
     left: 33%;
 }
 
-#c2 {
+.c2 {
     bottom: 7%;
     left: 60%;
 }
@@ -91,4 +96,11 @@ div.dropSpot {
 
 .dragObj {
     z-index: 1;
+}
+
+.doneButton {
+    color: yellow;
+    position: absolute;
+    top: 7%;
+    right: 7%;
 }

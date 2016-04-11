@@ -9,3 +9,4 @@ $(function() {
 $(document).ready(function(){
     $("#mainDisplay").hide();
 });
+

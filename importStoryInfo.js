@@ -1,6 +1,5 @@
 var imageFiles = {};
 var stories;
-var narration = {};
 
 // create an associative array of image filenames
 // has the form {Dora: "img/characters/Dora.png", Swiper: "...", ...}
@@ -65,4 +64,4 @@ Papa.parse("expInfo/scripts.csv", {
 	});
     }
 });
-			
+
