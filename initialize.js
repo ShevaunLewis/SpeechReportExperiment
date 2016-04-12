@@ -15,8 +15,10 @@ $('#bb-bookblock').bookblock( {
     shadowSides : 0.8,
     shadowFlip : 0.7,
     onEndFlip: function(page, isLimit) {
-        startPage(page, isLimit);
-    }
+        updateStatus();
+        startPage(page);
+    },
+    circular : true
 } );
 
 var $slides = $('#bb-bookblock').children();

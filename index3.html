@@ -39,47 +39,77 @@
 
   <div id="intro" class="bb-item">
     <div style="width:100%, height:100%"></div>
-    <div id="introNarr"><img draggable="false"></div>
-    <audio autoplay class="narrationAudio"></audio>
+    <div id="introNarr"><img ></div>
+    <audio id="introAudio"></audio>
   </div>
 
   <div id = "scene1" class="bb-item">
-    <img class="backgroundImg" draggable="false">
+    <img class="backgroundImg" >
     <div class="char narrator">
-      <img draggable="false">
+      <img >
     </div>
     <div class="char c1">
-      <img draggable="false">
+      <img >
     </div>
     <div class="char c2">
-      <img draggable="false">
+      <img >
     </div>
-    <audio autoplay class="narrationAudio"></audio>
+    <div id="objStart">
+      <img id="giveObj1" class="dragObj">
+      <img id="giveObj2" class="dragObj">
+    </div>
+    <button class="doneButton"><i class="fa fa-check-circle fa-5x"></i></button>
+    <audio id="friendsAudio"></audio>
+    <audio id="decide1Audio"></audio>
+    <audio id="give1Audio"></audio>
+    <audio id="give2Audio"></audio>
   </div>
 
-  <div id="scene2" class="page bb-item">
-    <img class="backgroundImg" draggable="false">
+  <div id="scene2" class="bb-item">
+    <img class="backgroundImg" >
     <div class="char narrator">
-      <img draggable="false">
+      <img >
+      <img class="dragObj"></img>
     </div>
     <div class="char c1">
-      <img draggable="false">
+      <img >
+      <img class="dragObj"></img>
     </div>
     <div class="char c2">
-      <img draggable="false">
+      <img >
+      <img class="dragObj"></img>
     </div>
+    <div id="takeGoal">
+      <img >
+    </div>
+    <audio id="distributeAudio"></audio>
+    <audio id="decide2Audio"></audio>
+    <audio id="take1Audio"></audio>
+    <audio id="stillAudio"></audio>
+    <audio id="take2Audio"></audio>
+    <button class="doneButton"><i class="fa fa-check-circle fa-5x"></i></button>
   </div>
 
-  <div class="bb-item">
-      <img src="img/backgrounds/plain_hill.png" alt="image03" />
+  <div id="end" class="bb-item">
+    <img src="img/backgrounds/plain_hill.png" alt="image03" />
+    <audio id="endAudio"></audio>
   </div>
 
-  </div>
+  </div> <!-- bookblock -->
+  
   <div>
     <button id="bb-nav-prev"><i class="fa fa-arrow-left fa-lg"></i></button>
     <button id="bb-nav-next"><i class="fa fa-arrow-right fa-lg"></i></button>
   </div>
+
+</div> <!-- book -->
+
+<div id="statusBar">
+  <hr/>
+  <span id="subjInfo"></span>
+  <span id="expStatus"></span>
 </div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="jsPkg/jquerypp.custom.js"></script>
