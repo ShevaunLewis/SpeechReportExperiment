@@ -41,10 +41,10 @@ div.char {
     position: absolute;
 }
 
-div.dropSpot {
-    height: 40%;
+div.charObj {
+    height: 30%;
     display: inline-block;
-    z-index:1;
+    z-index: 1;
     margin-left: -10%;
 }
 
