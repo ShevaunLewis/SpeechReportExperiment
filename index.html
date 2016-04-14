@@ -8,7 +8,6 @@
   <title>Speech Report Experiment</title>
   <meta name="description" content="" />
   <meta name="author" content="Shevaun Lewis" />
-  <link rel="stylesheet" type="text/css" href="responsive.css" />
   <link rel="stylesheet" type="text/css" href="bookblock.css" />
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -43,22 +42,22 @@
     <audio id="introAudio"></audio>
   </div>
 
-  <div id = "scene1" class="bb-item">
+  <div id="scene1" class="bb-item">
     <img class="backgroundImg" >
-    <div class="char narrator">
+    <div class="char narrator" id="narr-g">
       <img >
     </div>
-    <div class="char c1">
+    <div class="char c1" id="c1-g">
       <img >
     </div>
-    <div class="char c2">
+    <div class="char c2" id="c2-g">
       <img >
     </div>
-    <div id="objStart">
+    <div class="objStart" id="objStart">
       <img id="giveObj1" class="dragObj">
       <img id="giveObj2" class="dragObj">
     </div>
-    <button class="doneButton"><i class="fa fa-check-circle fa-5x"></i></button>
+    <button class="doneButton"><i class="fa fa-check fa-5x"></i></button>
     <audio id="friendsAudio"></audio>
     <audio id="decide1Audio"></audio>
     <audio id="give1Audio"></audio>
@@ -67,17 +66,17 @@
 
   <div id="scene2" class="bb-item">
     <img class="backgroundImg" >
-    <div class="char narrator">
+    <div class="char narrator" id="narr-t">
       <img >
-      <div class="charObj"><img class="dragObj"></div>
+      <img class="dragObj">
     </div>
-    <div class="char c1">
+    <div class="char c1" id="c1-t">
       <img >
-      <div class="charObj"><img class="dragObj"></div>
+      <img class="dragObj">
     </div>
-    <div class="char c2">
+    <div class="char c2" id="c2-t">
       <img >
-      <div class="charObj"><img class="dragObj"></div>
+      <img class="dragObj">
     </div>
     <div id="takeGoal">
       <img >
@@ -87,7 +86,7 @@
     <audio id="take1Audio"></audio>
     <audio id="stillAudio"></audio>
     <audio id="take2Audio"></audio>
-    <button class="doneButton"><i class="fa fa-check-circle fa-5x"></i></button>
+    <button class="doneButton"><i class="fa fa-check fa-5x"></i></button>
   </div>
 
   <div id="end" class="bb-item">
@@ -97,8 +96,9 @@
   </div> <!-- bookblock -->
   
   <div>
-    <button id="bb-nav-prev"><i class="fa fa-arrow-left fa-lg"></i></button>
-    <button id="bb-nav-next"><i class="fa fa-arrow-right fa-lg"></i></button>
+    <button id="prevPage"><i class="fa fa-arrow-left fa-lg"></i></button>
+    <button id="nextPage"><i class="fa fa-arrow-right fa-lg"></i></button>
+    <button id="nextStory"><i class="fa fa-step-forward fa-lg"></i></button>
   </div>
 
 </div> <!-- book -->

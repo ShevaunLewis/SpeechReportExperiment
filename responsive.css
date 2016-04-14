@@ -70,7 +70,7 @@ div.charObj {
     left: 60%;
 }
 
-#objStart {
+.objStart {
     height: 14%;
     position: absolute;
     bottom: 7%;
@@ -96,11 +96,22 @@ div.charObj {
 
 .dragObj {
     z-index: 1;
-    display: inline-block;
+}
+
+.char .dragObj {
+    height: 30%;
+    margin: -10%;
+    top: 0;
+    left: 0;
+}
+
+#takeGoal .dragObj {
+    height: 30%;
+    float: left;
+    margin-right: -30%;
 }
 
 .doneButton {
-    color: yellow;
     position: absolute;
     top: 7%;
     right: 7%;

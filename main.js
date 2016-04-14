@@ -1,8 +1,11 @@
-// notes for 4/13:
-// deactivate navigation at appropriate points (prob get rid of buttons, just use keyboard and swipe)
+// notes:
 // fix recordResponse for take actions
 // add ending for experiment
-// allow backwards navigation (fix onEndFlip function)
+// add status bar update
+// fix handling of multiple drags in one response
+// reset positions of dragged elements after each story
+// fix display of characters relative to background/scene
+// make sure audio restarts if you go back
 
 // Module for subject info form
 var SubjForm = (function () {
@@ -14,7 +17,7 @@ var SubjForm = (function () {
       hideForm()
       RunInfo.setSubjInfo(subjInfo)
       $(".book").show()
-      Exp.startPage(0, true)
+      Exp.startExp()
     })
   }
   var initFormatting = function () {
@@ -45,6 +48,7 @@ var SubjForm = (function () {
   return { init: init, subjInfo: subjInfo }
 }())
 
+//Module for run info
 var RunInfo = (function () {
   var subjInfo
   var stories
@@ -64,9 +68,9 @@ var RunInfo = (function () {
     var s = stories[storyIndex]
     var cond = s.scriptConds[subjInfo.script]
     var audio = {}
-    for (var step in s.narration) {
-      var conds = s.narration[step]
-      audio[step] = ('na' in conds)
+    for (var line in s.narration) {
+      var conds = s.narration[line]
+      audio[line] = ('na' in conds)
 	? conds.na.audio
 	: conds[cond].audio
     }
@@ -119,6 +123,7 @@ var RunInfo = (function () {
 	   writeResults: writeResults }
 }())
 
+// Module for importing data from CSV files
 var ExpInfo = (function () {
   var imageFiles = {}
   var storyArray = []
@@ -202,61 +207,43 @@ var ExpInfo = (function () {
   return { init: init }
 }())
 
-var Book = (function () {
-  var $slides = $('#bb-bookblock').children()
+// Module for running experiment
+var Exp = (function () {
+  var storyIndex = 0
 
-  init = function () {
+  var init = function () {
+    $('img').attr('draggable', 'false')
+    setTransitions()
     $('#bb-bookblock').bookblock({
       speed: 700,
       shadowSides: 0.8,
       shadowFlip: 0.7,
       onBeforeFlip: function (page) {
-	$("#" + $slides[page].id + " audio").each(function () {
+	$(".bb-item audio").each(function () {
 	  this.pause()
 	})
-      },
-      onEndFlip: function (page, isLimit) {
-        //updateStatus()
-	if (page === 3) {
-	  Exp.startPage(0)
-	} else {
-          Exp.startPage(page + 1)
-	}
-      },
-      circular: true
+      }
     })
     $('.book').hide()
     initNav()
   }
+
+  /********** Story navigation ************/
   initNav = function () {
-
-    // Add navigation events
-    $('#bb-nav-next').on('click touchstart', function () {
-      $('#bb-bookblock').bookblock('next')
-      return false
+    // Add navigation buttons
+    $('#nextPage').on('click touchstart', function () {
+      go('next')
     })
 
-    $('#bb-nav-prev').on('click touchstart', function () {
-      $('#bb-bookblock').bookblock('prev')
-      return false
+    $('#prevPage').on('click touchstart', function () {
+      go('prev')
     })
 
-    // Add swipe events
-    // need to disable these during times when we expect drag and drop
-    // $slides.on({
-    //   'swipeleft': function (event) {
-    //     //$('#bb-bookblock').bookblock('next')
-    // 	Exp.nextPage()
-    //     return false
-    //   },
-    //   'swiperight': function (event) {
-    //     //$('#bb-bookblock').bookblock('prev')
-    // 	Exp.nextPage()
-    //     return false
-    //   }
-    // })
+    $('#nextStory').on('click touchstart', function() {
+      nextStory()
+    })
 
-    // Add keyboard events
+    // Add keyboard navigation
     $(document).keydown(function (e) {
       var keyCode = e.keyCode || e.which,
         arrow = {
@@ -268,70 +255,161 @@ var Book = (function () {
 
       switch ( keyCode ) {
       case arrow.left:
-        $('#bb-bookblock').bookblock('prev')
+        go('prev')
         break
       case arrow.right:
-        $('#bb-bookblock').bookblock('next')
+        go('next')
         break
+      case arrow.down:
+	nextStory()
+	break
+      case arrow.up:
+	prevStory()
       }
     })
   }
-  return { init: init }
-}())
+  
+  var go = function(direction) {
+    //Determine next page before flipping starts
+    var p = newPage(direction)
 
-var Exp = (function () {
-  var storyIndex = -1
+    //Turn to appropriate page
+    $('#bb-bookblock').bookblock(direction)
 
-  var init = function () {
-    $('img').attr('draggable', 'false')
-    setTransitions()
+    //Start story
+    startPage(p)
+
   }
-  var stepIndex = 0
-  var pageIndex = 0
 
-  var page1 = ['friends', 'decide1', 'give1', 'give2']
-  var page2 = ['distribute', 'decide2', 'take1', 'still', 'take2']
-  var pages = [['hi'], page1, page2, ['end']]
-
-  var startPage = function(page) {
-    stepIndex = 0
-    
-    if (page === 0) {
+  var nextStory = function() {
+    if (storyIndex < 7) {
       storyIndex++
-      var story = RunInfo.getStory(storyIndex)
-      setScene(story)
-      setAudio(story)
-      pageIndex = 0
-      //add status bar update for storyID
+      setStory()
+      go('first')
     } else {
-      pageIndex = page
+      endExperiment()
     }
+  }
+
+  var prevStory = function() {
+    if (storyIndex > 0) {
+      storyIndex--
+    }
+    setStory()
+    go('first')
+  }
     
-    var step = pages[pageIndex][stepIndex]
+  var newPage = function (direction) {
+    var pages = ['intro','scene1','scene2','end']
+    var currentPage = $(".bb-item[style='display: block;']").attr('id')
+    switch (direction) {
+    case 'next':
+      return pages[pages.indexOf(currentPage) + 1]
+      break
+    case 'prev':
+      return pages[pages.indexOf(currentPage) - 1]
+      break
+    case 'first':
+      return 'intro'
+    }
+  }
+    
+  var swipeNav = function (turnOn) {
+    if (turnOn) {
+      $('.bb-item').on({
+	'swipeleft': function (event) {
+	  go('next')
+	},
+	'swiperight': function (event) {
+	  go('prev')
+	}
+      })
+    } else {
+      $('.bb-item').off('swipeleft swiperight')
+    }
+  }
 
-    //add status bar update for page (#/4) and step
+  var setNav = function (p) {
+    switch (p) {
+    case 'intro':
+      $('#prevPage').attr('disabled',true)
+      $('#nextPage').removeAttr('disabled')
+      $('#nextStory').hide()
+      break
+    case 'end':
+      $('#nextPage').attr('disabled',true)
+      $('#nextStory').show()
+      break
+    default:
+      $('#nextPage').removeAttr('disabled')
+      $('#prevPage').removeAttr('disabled')
+    }
+  }
 
-    playNarration(step)      
+  /************ Playing story *************/
+  // Start Experiment (public)
+  var startExp = function () {
+    setStory()
+    startPage('intro')
+  }
+
+  // Set story visuals and audio
+  var setStory = function () {
+    //Remove positioning of .dragObj in case they were dragged before
+    $('.dragObj').removeAttr('style')
+    
+    var story = RunInfo.getStory(storyIndex)
+    setScene(story)
+    setAudio(story)
+  }
+
+  // Start audio for page
+  var startPage = function (pageName) {
+    swipeNav(true)
+    setNav(pageName)
+    
+    stepIndex = 0
+
+    //add status bar update
+
+    playNarration(step(pageName))      
   }		
 
-  // ***** Story progression *****//
-  // (determined by transitions after narration audio segments)
+  // Within-page progress
+  var stepIndex = 0 
+
+  var step = function (pageName) {
+    var pages = {intro: ['hi'],
+		 scene1: ['friends', 'decide1', 'give1', 'give2'],
+		 scene2: ['distribute', 'decide2', 'take1', 'still', 'take2'],
+		 end: ['end']}
+    return pages[pageName][stepIndex]
+  }
+
+  var currentPage = function() {
+    return $(".bb-item[style='display: block;']").attr('id')
+  }
+  
   var setTransitions = function () {
-    $storyAudio.goAfterAudio.attr('onended', 'Exp.nextStep()')
-    $storyAudio.dragAfterAudio.attr('onended', 'Exp.startDragging()')
+    $storyAudio.goAfterAudio.on('ended', function() {
+      nextStep()
+    })
+    $storyAudio.dragAfterAudio.on('ended', function() {
+      startDragging()
+    })
   }
 
   var nextStep = function () {
     stepIndex++
-    var step = pages[pageIndex][stepIndex]
+    var s = step(currentPage())
 
     // Add visuals if necessary
-    switch ( step ) {
+    switch (s) {
     case 'give1':
-      $scene.giveObj1.show()
+      $('#giveObj1').show()
       break
     case 'give2':
-      $scene.giveObj2.show()
+      $('#giveObj2').show()
       break
     case 'decide2':
       $scene.takeGoal.show()
@@ -340,10 +418,10 @@ var Exp = (function () {
     }
 
     // Play audio
-    playNarration(step)
+    playNarration(s)
   }
 
-  // ***** Visuals *****//
+  // ******** Story Visuals *********//
   var $scene = {
     title: $('#title h1'),
     introNarr: $('#introNarr img'),
@@ -368,11 +446,11 @@ var Exp = (function () {
     $scene.c2.attr('src', story.c2)
     $scene.giveObj1.attr('src', story.giveObj1)
     $scene.giveObj2.attr('src', story.giveObj2)
-    addDropTargets('#scene1 .char')
 
     $scene.scene2Bg.attr('src', story.bg2)
     $scene.takeGoal.attr('src', story.takeTarget)
-    addDropTargets('#takeGoal')
+    addDropTargets('#scene1 .char, #takeGoal, .charObj')
+    $('.charObj').droppable('disable')
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
@@ -391,40 +469,58 @@ var Exp = (function () {
       },
       drop: function (event, ui) {
         drop(event, ui)
-      }
+      },
+      tolerance: 'touch'
     })
   }
 
   var drop = function (ev, ui) {
-    var source = ui.draggable[0].parentElement.id
-    if (source === '') {
-      source = ui.draggable[0].parentElement.parentElement.id
+    var dragged = ui.draggable[0]
+    var sourceId = dragged.parentElement.id
+    var $source = $('#' + sourceId)
+    var targetId = ev.target.id
+    var $target = $('#' + targetId)
+
+    // add to drop target
+    $target.append(dragged)
+    //dragged.style.height = '40%'
+    //dragged.style.marginLeft = '-10%'
+    dragged.style.top = '0'
+    dragged.style.left = '0'
+
+    //disable dropping on the current target
+    $target.css('border', 'none')
+    $target.droppable('disable')
+
+    //enable dropping on the source of the current drag
+    // (for "undoing")
+    if ($source.hasClass('ui-droppable')) {
+      $source.droppable('enable')
     }
-    var target = ev.target.id || ev.target.classList[1]
 
-    var step = pages[pageIndex][stepIndex]
-    RunInfo.recordResponse(storyIndex, step, source, target)
-
-    event.target.style.border = 'none'
-
-    $('.doneButton').show()
-    $('.doneButton').click(function () {
-      doneDragging(target)
-    })
+    // Record response and allow "done" if the target
+    // is one of the intended targets
+    if (!(ev.target.classList.contains('charObj'))) {
+      RunInfo.recordResponse(storyIndex, step(currentPage()), sourceId, targetId)
+      $('.doneButton').show()
+      $('.doneButton').click(function () {
+	doneDragging($target)
+      })
+    }
   }
 
-  var doneDragging = function (droppedTarget) {
+  var doneDragging = function ($droppedTarget) {
     $('.doneButton').hide()
 
-    var step = pages[pageIndex][stepIndex]
-    if (step === 'give1') {
+    var s = step(currentPage())
+    if (s === 'give1') {
       $('.dragObj').draggable('destroy')
-      $('#' + droppedTarget).droppable('disable')
+      $droppedTarget.droppable('destroy')
       nextStep()
-    } else if (step === 'take1') {
+    } else if (s === 'take1') {
       nextStep()
     } else {
-      $('#bb-nav-next').click()
+      go('next')
     }
   }
 
@@ -433,9 +529,12 @@ var Exp = (function () {
       containment: 'document',
       revert: 'invalid'
     })
+
+    //Disable swipe navigation
+    swipeNav(false)
   }
 
-  // ***** Narration audio *****//
+  // ********* Story Narration ***********//
   var $storyAudio = {
     hi: $('#introAudio'),
     friends: $('#friendsAudio'),
@@ -463,19 +562,18 @@ var Exp = (function () {
     $storyAudio[step][0].play()
   }
 
+  var endExperiment = function () {
+//    $('#expStatus').html('Done')
+//    $('#storyText').remove()
+    $('body').html("<button id='resultsButton'>Get results!</button>")
+    $('#resultsButton').click(function() {
+      RunInfo.writeResults()
+    })
+  }
 
-  return { init: init, startPage: startPage, nextStep: nextStep,
-	   startDragging: startDragging }
+  return { init: init, startExp: startExp }
 }())
 
-function endExperiment () {
-  $('#expStatus').html('Done')
-  $('#storyText').remove()
-  $('body').html("<button id='resultsButton'>Get results!</button>")
-  $('#resultsButton').click(writeResults)
-}
-
 ExpInfo.init()
-Book.init()
 Exp.init()
 SubjForm.init()

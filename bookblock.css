@@ -1,13 +1,13 @@
 .bb-bookblock {
     height: 95%;
     width: 100%;
-	margin: 0 auto;
-	position: relative;
-	z-index: 100;
-	-webkit-perspective: 1300px;
-	perspective: 1300px;
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
+    margin: 0 auto;
+    position: relative;
+    z-index: 100;
+    -webkit-perspective: 1300px;
+    perspective: 1300px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 .bb-page {
