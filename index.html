@@ -8,7 +8,6 @@
   <title>Speech Report Experiment</title>
   <meta name="description" content="" />
   <meta name="author" content="Shevaun Lewis" />
-  <link rel="stylesheet" type="text/css" href="bookblock.css" />
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="responsive.css" />
@@ -33,15 +32,13 @@
   <p><button id="submitForm">Submit</button></p>
 </form>
 
-<div class="book">
-  <div id="bb-bookblock" class="bb-bookblock">
-
-  <div id="intro" class="bb-item" style="width:100%">
+<div id="book">
+  <div id="intro" class="page" style="width:100%">
     <div id="introNarr"><img ></div>
     <audio id="introAudio"></audio>
   </div>
 
-  <div id="scene1" class="bb-item">
+  <div id="scene1" class="page">
     <img class="backgroundImg" >
     <div class="char narrator" id="narr-g">
       <img >
@@ -63,7 +60,7 @@
     <audio id="give2Audio"></audio>
   </div>
 
-  <div id="scene2" class="bb-item">
+  <div id="scene2" class="page">
     <img class="backgroundImg" >
     <div class="char narrator" id="narr-t">
       <img >
@@ -88,12 +85,12 @@
     <button class="doneButton"><i class="fa fa-check fa-5x"></i></button>
   </div>
 
-  <div id="end" class="bb-item">
+  <div id="end" class="page">
     <audio id="endAudio"></audio>
   </div>
 
   </div> <!-- bookblock -->
-  
+
   <!--<div>
     <button id="prevPage"><i class="fa fa-arrow-left fa-lg"></i></button>
     <button id="nextPage"><i class="fa fa-arrow-right fa-lg"></i></button>
@@ -111,7 +108,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="jsPkg/jquerypp.custom.js"></script>
-<script src="jsPkg/jquery.bookblock.min.js"></script>
 <script src="jsPkg/papaparse.min.js"></script>
 <script src="main.js"></script>
 </body>

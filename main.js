@@ -6,6 +6,7 @@
 // reset positions of dragged elements after each story
 // fix display of characters relative to background/scene
 // make sure audio restarts if you go back
+// add button to mark when experimenter is fixing child's response
 
 // Module for subject info form
 var SubjForm = (function () {
@@ -223,23 +224,16 @@ var ExpInfo = (function () {
 var Exp = (function () {
   var storyIndex = 0,
       stepIndex = 0,
+      pageIndex = 0,
       $scene,
-      $storyAudio
+      $storyAudio,
+      $pages = [$('#intro'), $('#scene1'), $('#scene2'), $('#end')]
 
   function init() {
     $('img').attr('draggable', 'false')
     setTransitions()
-    $('#bb-bookblock').bookblock({
-      speed: 700,
-      shadowSides: 0.8,
-      shadowFlip: 0.7,
-      onBeforeFlip: function (page) {
-        $(".bb-item audio").each(function () {
-          this.pause()
-        })
-      }
-    })
-    $('.book').hide()
+    $('#book').hide()
+    $('.page').hide()
     initNav()
   }
 
@@ -257,10 +251,10 @@ var Exp = (function () {
 
       switch (keyCode) {
       case arrow.left:
-        go('prev')
+        prevPage()
         break
       case arrow.right:
-        go('next')
+        nextPage()
         break
       case arrow.down:
         nextStory()
@@ -271,28 +265,29 @@ var Exp = (function () {
     })
   }
 
-  function go(direction) {
-    //Determine next page before flipping starts
-    if ((currentPage() === 'end') & (direction === 'next')) {
-      nextStory()
-    } else if ((currentPage() === 'intro') & (direction === 'prev')) {
+  function prevPage() {
+    if (pageIndex === 0) {
       prevStory()
     } else {
-      var p = newPage(direction)
-
-      //Turn to appropriate page
-      $('#bb-bookblock').bookblock(direction)
-
-      //Start story
-      startPage(p)
+      pageIndex--
     }
+    startPage()
+  }
+
+  function nextPage() {
+    if (pageIndex === 3) {
+      nextStory()
+    } else {
+      pageIndex++
+    }
+    startPage()
   }
 
   function nextStory() {
     if (storyIndex < 7) {
       storyIndex++
       setStory()
-      go('first')
+      pageIndex = 0
     } else {
       endExperiment()
     }
@@ -303,61 +298,30 @@ var Exp = (function () {
       storyIndex--
     }
     setStory()
-    go('first')
-  }
-
-  function newPage(direction) {
-    var pages = ['intro','scene1','scene2','end']
-
-    switch (direction) {
-    case 'next':
-      return pages[pages.indexOf(currentPage()) + 1]
-      break
-    case 'prev':
-      return pages[pages.indexOf(currentPage()) - 1]
-      break
-    case 'first':
-      return 'intro'
-    }
+    pageIndex = 0
   }
 
   function swipeNav(turnOn) {
     if (turnOn) {
-      $('.bb-item').on({
+      $('.page').on({
         'swipeleft': function (event) {
-          go('next')
+          nextPage()
         },
         'swiperight': function (event) {
-          go('prev')
+          prevPage()
         }
       })
     } else {
-      $('.bb-item').off('swipeleft swiperight')
-    }
-  }
-
-  function setNav(p) {
-    switch (p) {
-    case 'intro':
-      $('#prevPage').attr('disabled', true)
-      $('#nextPage').removeAttr('disabled')
-      $('#nextStory').hide()
-      break
-    case 'end':
-      $('#nextPage').attr('disabled', true)
-      $('#nextStory').show()
-      break
-    default:
-      $('#nextPage').removeAttr('disabled')
-      $('#prevPage').removeAttr('disabled')
+      $('.page').off('swipeleft swiperight')
     }
   }
 
   /************ Playing story *************/
   // Start Experiment (public)
   function startExp() {
+    $('#book').show()
     setStory()
-    startPage('intro')
+    startPage()
   }
 
   // Set story visuals and audio
@@ -369,35 +333,35 @@ var Exp = (function () {
     $('#objStart').append($('#scene1 .dragObj'))
     $("#scene2 .char:not(:has('.dragObj'))").append($('#takeGoal .dragObj:first-child'))
 
-
     setScene(story)
     setAudio(story)
   }
 
   // Start audio for page
-  function startPage(pageName) {
+  function startPage() {
+    $('.page').hide()
+    $pages[pageIndex].show()
+
     swipeNav(true)
-    setNav(pageName)
 
     stepIndex = 0
 
-    //add status bar update
-
-    playNarration(step(pageName))
+    // stop any playing audio, and start page narration
+    $('audio').each(function () {
+      this.pause()
+      this.currentTime = 0
+    })
+    playNarration(step())
   }
 
   // Within-page progress
 
-  function step(pageName) {
-    var pages = {intro: ['hi'],
-                 scene1: ['friends', 'decide1', 'give1', 'give2'],
-                 scene2: ['distribute', 'decide2', 'take1', 'still', 'take2'],
-                 end: ['end']}
-    return pages[pageName][stepIndex]
-  }
-
-  function currentPage() {
-    return $(".bb-item:visible").attr('id')
+  function step() {
+    var pages = [['hi'],
+                 ['friends', 'decide1', 'give1', 'give2'],
+                 ['distribute', 'decide2', 'take1', 'still', 'take2'],
+                 ['end']]
+    return pages[pageIndex][stepIndex]
   }
 
   function setTransitions() {
@@ -413,7 +377,7 @@ var Exp = (function () {
     var s
 
     stepIndex++
-    s = step(currentPage())
+    s = step()
 
     // Add visuals if necessary
     switch (s) {
@@ -515,7 +479,7 @@ var Exp = (function () {
     // Record response and allow "done" if the target
     // is one of the intended targets
     if (!(ev.target.classList.contains('charObj'))) {
-      RunInfo.recordResponse(storyIndex, step(currentPage()), sourceId, targetId)
+      RunInfo.recordResponse(storyIndex, step(), sourceId, targetId)
       $('.doneButton').show()
       $('.doneButton').click(function () {
         doneDragging($target)
@@ -524,7 +488,8 @@ var Exp = (function () {
   }
 
   function doneDragging($droppedTarget) {
-    var s = step(currentPage())
+    console.log("done dragging: clicked")
+    var s = step()
     $('.doneButton').hide()
 
     if (s === 'give1') {
@@ -536,7 +501,8 @@ var Exp = (function () {
       $('#scene2 .char').droppable('disable')
       nextStep()
     } else {
-      go('next')
+      console.log("done dragging: starting next page")
+      nextPage()
     }
   }
 
@@ -577,7 +543,7 @@ var Exp = (function () {
 
   function playNarration(step) {
     $storyAudio[step][0].play()
-    console.log(currentPage(), stepIndex)
+    console.log(pageIndex, stepIndex)
   }
 
   function endExperiment() {
