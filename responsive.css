@@ -26,10 +26,15 @@ fieldset {
 /* Specific to the Speech Reports webapp */
 
 .book {
-	position: relative;
-	height: 90vh;
-	margin: auto;
-	text-align: center;
+    position: relative;
+    height: 90vh;
+    margin: auto;
+    text-align: center;
+}
+
+.bb-item {
+    text-align: center;
+    margin: auto;
 }
 
 img {

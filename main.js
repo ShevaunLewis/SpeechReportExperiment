@@ -9,7 +9,9 @@
 
 // Module for subject info form
 var SubjForm = (function () {
-  var init = function () {
+  var subjInfo = {}
+
+  function init() {
     initFormatting()
     $('#submitForm').click(function () {
       saveInfo()
@@ -20,14 +22,13 @@ var SubjForm = (function () {
       Exp.startExp()
     })
   }
-  var initFormatting = function () {
+  function initFormatting() {
     $('#script').buttonset()
     $('#date').datepicker()
     $('button').button()
   }
 
-  var subjInfo = {}
-  var saveInfo = function () {
+  function saveInfo() {
     subjInfo = {
       'subjId': $('#subjID').val(),
       'date': $('#date').val(),
@@ -35,46 +36,51 @@ var SubjForm = (function () {
     }
   }
 
-  var hideForm = function () {
+  function hideForm() {
     $('#subjForm').remove()
   }
 
-  var updateSubjInfoBar = function () {
+  function updateSubjInfoBar() {
     $('#subjInfo').html('Subj: ' + subjInfo.subjId +
-      '         Date: ' + subjInfo.date +
-      '         Script: ' + subjInfo.script)
+                        '         Date: ' + subjInfo.date +
+                        '         Script: ' + subjInfo.script)
   }
 
-  return { init: init, subjInfo: subjInfo }
+  return { init: init }
 }())
 
 //Module for run info
 var RunInfo = (function () {
-  var subjInfo
-  var stories
-  var images
-  var responses = []
+  var subjInfo,
+      stories,
+      images,
+      responses = []
 
-  var setExpInfo = function(s, i) {
+  function setExpInfo(s, i) {
     stories = s
     images = i
   }
 
-  var setSubjInfo = function(si) {
+  function setSubjInfo(si) {
     subjInfo = si
   }
 
-  var getStory = function (storyIndex) {
-    var s = stories[storyIndex]
-    var cond = s.scriptConds[subjInfo.script]
-    var audio = {}
-    for (var line in s.narration) {
-      var conds = s.narration[line]
+  function getStory(storyIndex) {
+    var s = stories[storyIndex],
+        cond = s.scriptConds[subjInfo.script],
+        line,
+        conds,
+        audio = {},
+        story
+
+    for (line in s.narration) {
+      conds = s.narration[line]
       audio[line] = ('na' in conds)
-	? conds.na.audio
-	: conds[cond].audio
+        ? conds.na.audio
+        : conds[cond].audio
     }
-    var story = {
+
+    story = {
       title: s.title,
       narrator: images[s.narrator],
       bg1: images[s.bg1],
@@ -91,7 +97,7 @@ var RunInfo = (function () {
     return story
   }
 
-  var recordResponse = function (storyIndex, step, objSource, target) {
+  function recordResponse(storyIndex, step, objSource, target) {
     var trialInfo = [subjInfo.subjId,
       subjInfo.date,
       subjInfo.script,
@@ -104,70 +110,76 @@ var RunInfo = (function () {
     console.log(responses)
   }
 
-  var writeResults = function () {
-    var csv = Papa.unparse({
+  function writeResults() {
+    var csv,
+        encodedUri,
+        link,
+        filename = 'SR_' + subjInfo.subjId + '.csv'
+
+    csv = Papa.unparse({
       fields: ['subjId', 'date', 'script', 'storyId', 'phase', 'cond',
         'objSource', 'target'],
       data: responses
     })
-    var encodedUri = encodeURI(csv)
-    var link = document.createElement('a')
+    encodedUri = encodeURI(csv)
+
+    link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    var filename = 'SR_' + subjInfo.subjId + '.csv'
     link.setAttribute('download', filename)
     link.click()
   }
 
   return { setExpInfo: setExpInfo, setSubjInfo: setSubjInfo,
-	   getStory: getStory, recordResponse: recordResponse,
-	   writeResults: writeResults }
+           getStory: getStory, recordResponse: recordResponse,
+           writeResults: writeResults }
 }())
 
 // Module for importing data from CSV files
 var ExpInfo = (function () {
-  var imageFiles = {}
-  var storyArray = []
+  var imageFiles = {},
+      storyArray = []
 
-  var init = function() {
+  function init() {
     getImageFiles()
     getStoryInfo()
   }
 
-  var getImageFiles = function () {
+  function getImageFiles() {
     Papa.parse('expInfo/imageFiles.csv', {
       download: true,
       header: true,
       complete: function (results) {
-	var imageArray = results.data
-	imageArray.forEach(function (it) {
+        var imageArray = results.data
+        imageArray.forEach(function (it) {
           imageFiles[it.name] = it.imgFile
         })
       }
     })
   }
 
-  var getStoryInfo = function () {
-    
+  function getStoryInfo() {
+
     // Create an array of story objects
     Papa.parse('expInfo/storyInfo.csv', {
       download: true,
       header: true,
       complete: function (results) {
         storyArray = results.data
-	parseStoryText()
+        parseStoryText()
       }
     })
   }
 
-  var parseStoryText = function () {
+  function parseStoryText() {
 
     // Add story narration
     Papa.parse('expInfo/storyText.csv', {
       download: true,
       header: true,
       complete: function (results) {
-        var narration = results.data
-        var narrHash = {}
+        var narration = results.data,
+            narrHash = {}
+
         narration.forEach(function (it) {
           var narrInfo = { text: it.text, audio: it.audioFile }
           if (!(it.storyId in narrHash)) {
@@ -181,12 +193,12 @@ var ExpInfo = (function () {
         storyArray.forEach(function (it) {
           it.narration = narrHash[it.storyId]
         })
-	parseScripts()
+        parseScripts()
       }
     })
   }
 
-  var parseScripts = function () {
+  function parseScripts() {
 
     // Add condition for each script
     Papa.parse('expInfo/scripts.csv', {
@@ -198,8 +210,8 @@ var ExpInfo = (function () {
           it.scriptConds = scripts[it.storyId - 1]
         })
 
-	// set RunInfo only after this has completed.
-	RunInfo.setExpInfo(storyArray,imageFiles)
+        // set RunInfo only after this has completed.
+        RunInfo.setExpInfo(storyArray, imageFiles)
       }
     })
   }
@@ -209,9 +221,12 @@ var ExpInfo = (function () {
 
 // Module for running experiment
 var Exp = (function () {
-  var storyIndex = 0
+  var storyIndex = 0,
+      stepIndex = 0,
+      $scene,
+      $storyAudio
 
-  var init = function () {
+  function init() {
     $('img').attr('draggable', 'false')
     setTransitions()
     $('#bb-bookblock').bookblock({
@@ -219,9 +234,9 @@ var Exp = (function () {
       shadowSides: 0.8,
       shadowFlip: 0.7,
       onBeforeFlip: function (page) {
-	$(".bb-item audio").each(function () {
-	  this.pause()
-	})
+        $(".bb-item audio").each(function () {
+          this.pause()
+        })
       }
     })
     $('.book').hide()
@@ -229,31 +244,18 @@ var Exp = (function () {
   }
 
   /********** Story navigation ************/
-  initNav = function () {
-    // Add navigation buttons
-    $('#nextPage').on('click touchstart', function () {
-      go('next')
-    })
-
-    $('#prevPage').on('click touchstart', function () {
-      go('prev')
-    })
-
-    $('#nextStory').on('click touchstart', function() {
-      nextStory()
-    })
-
-    // Add keyboard navigation
+  function initNav() {
+    // Keyboard navigation
     $(document).keydown(function (e) {
       var keyCode = e.keyCode || e.which,
-        arrow = {
-          left: 37,
-          up: 38,
-          right: 39,
-          down: 40
-      }
+          arrow = {
+            left: 37,
+            up: 38,
+            right: 39,
+            down: 40
+          }
 
-      switch ( keyCode ) {
+      switch (keyCode) {
       case arrow.left:
         go('prev')
         break
@@ -261,27 +263,32 @@ var Exp = (function () {
         go('next')
         break
       case arrow.down:
-	nextStory()
-	break
+        nextStory()
+        break
       case arrow.up:
-	prevStory()
+        prevStory()
       }
     })
   }
-  
-  var go = function(direction) {
+
+  function go(direction) {
     //Determine next page before flipping starts
-    var p = newPage(direction)
+    if ((currentPage() === 'end') & (direction === 'next')) {
+      nextStory()
+    } else if ((currentPage() === 'intro') & (direction === 'prev')) {
+      prevStory()
+    } else {
+      var p = newPage(direction)
 
-    //Turn to appropriate page
-    $('#bb-bookblock').bookblock(direction)
+      //Turn to appropriate page
+      $('#bb-bookblock').bookblock(direction)
 
-    //Start story
-    startPage(p)
-
+      //Start story
+      startPage(p)
+    }
   }
 
-  var nextStory = function() {
+  function nextStory() {
     if (storyIndex < 7) {
       storyIndex++
       setStory()
@@ -291,53 +298,53 @@ var Exp = (function () {
     }
   }
 
-  var prevStory = function() {
+  function prevStory() {
     if (storyIndex > 0) {
       storyIndex--
     }
     setStory()
     go('first')
   }
-    
-  var newPage = function (direction) {
+
+  function newPage(direction) {
     var pages = ['intro','scene1','scene2','end']
-    var currentPage = $(".bb-item[style='display: block;']").attr('id')
+
     switch (direction) {
     case 'next':
-      return pages[pages.indexOf(currentPage) + 1]
+      return pages[pages.indexOf(currentPage()) + 1]
       break
     case 'prev':
-      return pages[pages.indexOf(currentPage) - 1]
+      return pages[pages.indexOf(currentPage()) - 1]
       break
     case 'first':
       return 'intro'
     }
   }
-    
-  var swipeNav = function (turnOn) {
+
+  function swipeNav(turnOn) {
     if (turnOn) {
       $('.bb-item').on({
-	'swipeleft': function (event) {
-	  go('next')
-	},
-	'swiperight': function (event) {
-	  go('prev')
-	}
+        'swipeleft': function (event) {
+          go('next')
+        },
+        'swiperight': function (event) {
+          go('prev')
+        }
       })
     } else {
       $('.bb-item').off('swipeleft swiperight')
     }
   }
 
-  var setNav = function (p) {
+  function setNav(p) {
     switch (p) {
     case 'intro':
-      $('#prevPage').attr('disabled',true)
+      $('#prevPage').attr('disabled', true)
       $('#nextPage').removeAttr('disabled')
       $('#nextStory').hide()
       break
     case 'end':
-      $('#nextPage').attr('disabled',true)
+      $('#nextPage').attr('disabled', true)
       $('#nextStory').show()
       break
     default:
@@ -348,60 +355,65 @@ var Exp = (function () {
 
   /************ Playing story *************/
   // Start Experiment (public)
-  var startExp = function () {
+  function startExp() {
     setStory()
     startPage('intro')
   }
 
   // Set story visuals and audio
-  var setStory = function () {
-    //Remove positioning of .dragObj in case they were dragged before
-    $('.dragObj').removeAttr('style')
-    
+  function setStory() {
     var story = RunInfo.getStory(storyIndex)
+
+    //Remove dragged objects from targets, return to original positions
+    // Scene1
+    $('#objStart').append($('#scene1 .dragObj'))
+    $("#scene2 .char:not(:has('.dragObj'))").append($('#takeGoal .dragObj:first-child'))
+
+
     setScene(story)
     setAudio(story)
   }
 
   // Start audio for page
-  var startPage = function (pageName) {
+  function startPage(pageName) {
     swipeNav(true)
     setNav(pageName)
-    
+
     stepIndex = 0
 
     //add status bar update
 
-    playNarration(step(pageName))      
-  }		
+    playNarration(step(pageName))
+  }
 
   // Within-page progress
-  var stepIndex = 0 
 
-  var step = function (pageName) {
+  function step(pageName) {
     var pages = {intro: ['hi'],
-		 scene1: ['friends', 'decide1', 'give1', 'give2'],
-		 scene2: ['distribute', 'decide2', 'take1', 'still', 'take2'],
-		 end: ['end']}
+                 scene1: ['friends', 'decide1', 'give1', 'give2'],
+                 scene2: ['distribute', 'decide2', 'take1', 'still', 'take2'],
+                 end: ['end']}
     return pages[pageName][stepIndex]
   }
 
-  var currentPage = function() {
-    return $(".bb-item[style='display: block;']").attr('id')
+  function currentPage() {
+    return $(".bb-item:visible").attr('id')
   }
-  
-  var setTransitions = function () {
-    $storyAudio.goAfterAudio.on('ended', function() {
+
+  function setTransitions() {
+    $storyAudio.goAfterAudio.on('ended', function () {
       nextStep()
     })
-    $storyAudio.dragAfterAudio.on('ended', function() {
+    $storyAudio.dragAfterAudio.on('ended', function () {
       startDragging()
     })
   }
 
-  var nextStep = function () {
+  function nextStep() {
+    var s
+
     stepIndex++
-    var s = step(currentPage())
+    s = step(currentPage())
 
     // Add visuals if necessary
     switch (s) {
@@ -422,7 +434,7 @@ var Exp = (function () {
   }
 
   // ******** Story Visuals *********//
-  var $scene = {
+  $scene = {
     title: $('#title h1'),
     introNarr: $('#introNarr img'),
     scene1Bg: $('#scene1 .backgroundImg'),
@@ -436,7 +448,7 @@ var Exp = (function () {
     takeObjs: $('#scene2 .dragObj')
   }
 
-  var setScene = function (story) {
+  function setScene(story) {
     $scene.title.text(story.title)
     $scene.introNarr.attr('src', story.narrator)
 
@@ -449,8 +461,10 @@ var Exp = (function () {
 
     $scene.scene2Bg.attr('src', story.bg2)
     $scene.takeGoal.attr('src', story.takeTarget)
-    addDropTargets('#scene1 .char, #takeGoal, .charObj')
+    addDropTargets('.char, #takeGoal, .charObj')
     $('.charObj').droppable('disable')
+    $('#scene1 .char').droppable('enable')
+    $('#scene2 .char').droppable('disable')
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
@@ -458,7 +472,7 @@ var Exp = (function () {
   }
 
   // Drag and drop functionality //
-  var addDropTargets = function (targetSelector) {
+  function addDropTargets(targetSelector) {
     $(targetSelector).droppable({
       accept: '.dragObj',
       activate: function (event, ui) {
@@ -474,12 +488,12 @@ var Exp = (function () {
     })
   }
 
-  var drop = function (ev, ui) {
-    var dragged = ui.draggable[0]
-    var sourceId = dragged.parentElement.id
-    var $source = $('#' + sourceId)
-    var targetId = ev.target.id
-    var $target = $('#' + targetId)
+  function drop(ev, ui) {
+    var dragged = ui.draggable[0],
+        sourceId = dragged.parentElement.id,
+        $source = $('#' + sourceId),
+        targetId = ev.target.id,
+        $target = $('#' + targetId)
 
     // add to drop target
     $target.append(dragged)
@@ -504,27 +518,29 @@ var Exp = (function () {
       RunInfo.recordResponse(storyIndex, step(currentPage()), sourceId, targetId)
       $('.doneButton').show()
       $('.doneButton').click(function () {
-	doneDragging($target)
+        doneDragging($target)
       })
     }
   }
 
-  var doneDragging = function ($droppedTarget) {
+  function doneDragging($droppedTarget) {
+    var s = step(currentPage())
     $('.doneButton').hide()
 
-    var s = step(currentPage())
     if (s === 'give1') {
       $('.dragObj').draggable('destroy')
-      $droppedTarget.droppable('destroy')
+      $droppedTarget.droppable('disable')
       nextStep()
     } else if (s === 'take1') {
+      $droppedTarget.droppable('enable')
+      $('#scene2 .char').droppable('disable')
       nextStep()
     } else {
       go('next')
     }
   }
 
-  var startDragging = function () {
+  function startDragging() {
     $('.dragObj').draggable({
       containment: 'document',
       revert: 'invalid'
@@ -535,7 +551,7 @@ var Exp = (function () {
   }
 
   // ********* Story Narration ***********//
-  var $storyAudio = {
+  $storyAudio = {
     hi: $('#introAudio'),
     friends: $('#friendsAudio'),
     decide1: $('#decide1Audio'),
@@ -552,21 +568,23 @@ var Exp = (function () {
     dragAfterAudio: $('#give1Audio, #give2Audio, #take1Audio, #take2Audio')
   }
 
-  var setAudio = function (story) {
-    for (var key in $storyAudio) {
+  function setAudio(story) {
+    var key
+    for (key in $storyAudio) {
       $storyAudio[key].attr('src', story.audio[key])
     }
   }
 
-  var playNarration = function (step) {
+  function playNarration(step) {
     $storyAudio[step][0].play()
+    console.log(currentPage(), stepIndex)
   }
 
-  var endExperiment = function () {
-//    $('#expStatus').html('Done')
-//    $('#storyText').remove()
+  function endExperiment() {
+    // $('#expStatus').html('Done')
+    // $('#storyText').remove()
     $('body').html("<button id='resultsButton'>Get results!</button>")
-    $('#resultsButton').click(function() {
+    $('#resultsButton').click(function () {
       RunInfo.writeResults()
     })
   }
