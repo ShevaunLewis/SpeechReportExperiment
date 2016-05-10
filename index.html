@@ -33,8 +33,8 @@
 </form>
 
 <div id="book">
-  <div id="intro" class="page" style="width:100%">
-    <div id="introNarr"><img ></div>
+  <div id="intro" class="page" style="height:100%">
+    <div class="introNarr"><img ></div>
     <audio id="introAudio"></audio>
   </div>
 
@@ -53,7 +53,7 @@
       <img id="giveObj1" class="dragObj">
       <img id="giveObj2" class="dragObj">
     </div>
-    <button class="doneButton"><i class="fa fa-check fa-5x"></i></button>
+    <button class="undoButton"><i class="fa fa-undo fa-3x"></i></button>
     <audio id="friendsAudio"></audio>
     <audio id="decide1Audio"></audio>
     <audio id="give1Audio"></audio>
@@ -64,15 +64,15 @@
     <img class="backgroundImg" >
     <div class="char narrator" id="narr-t">
       <img >
-      <img class="dragObj">
+      <img id="narrObj" class="dragObj">
     </div>
     <div class="char c1" id="c1-t">
       <img >
-      <img class="dragObj">
+      <img id="c1Obj" class="dragObj">
     </div>
     <div class="char c2" id="c2-t">
       <img >
-      <img class="dragObj">
+      <img id="c2Obj" class="dragObj">
     </div>
     <div id="takeGoal">
       <img >
@@ -82,10 +82,11 @@
     <audio id="take1Audio"></audio>
     <audio id="stillAudio"></audio>
     <audio id="take2Audio"></audio>
-    <button class="doneButton"><i class="fa fa-check fa-5x"></i></button>
+    <button class="undoButton"><i class="fa fa-undo fa-3x"></i></button>
   </div>
 
-  <div id="end" class="page">
+  <div id="end" class="page" style="height:100%">
+    <div class="introNarr"><img ></div>
     <audio id="endAudio"></audio>
   </div>
 

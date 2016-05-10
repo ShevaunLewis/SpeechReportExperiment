@@ -33,8 +33,7 @@ fieldset {
 }
 
 .page {
-    text-align: center;
-    margin: auto;
+    position: relative;
 }
 
 img {
@@ -57,7 +56,7 @@ div.charObj {
     margin-left: -10%;
 }
 
-#introNarr {
+.introNarr {
     position: absolute;
     height: 40%;
     bottom: 10%;
@@ -84,6 +83,10 @@ div.charObj {
     position: absolute;
     bottom: 7%;
     left: 33%;
+}
+
+.objStart img {
+    position: absolute;
 }
 
 #takeGoal {
@@ -120,8 +123,8 @@ div.charObj {
     margin-right: -30%;
 }
 
-.doneButton {
+.undoButton {
     position: absolute;
-    top: 7%;
-    right: 7%;
+    bottom: 10px;
+    right: 10px;
 }

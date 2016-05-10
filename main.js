@@ -98,14 +98,14 @@ var RunInfo = (function () {
     return story
   }
 
-  function recordResponse(storyIndex, step, objSource, target) {
+  function recordResponse(storyIndex, step, object, target) {
     var trialInfo = [subjInfo.subjId,
       subjInfo.date,
       subjInfo.script,
       stories[storyIndex].storyId,
       step,
       stories[storyIndex].scriptConds[subjInfo.script],
-      objSource,
+      object,
       target]
     responses.push(trialInfo)
     console.log(responses)
@@ -227,7 +227,11 @@ var Exp = (function () {
       pageIndex = 0,
       $scene,
       $storyAudio,
-      $pages = [$('#intro'), $('#scene1'), $('#scene2'), $('#end')]
+      $pages = [$('#intro'), $('#scene1'), $('#scene2'), $('#end')],
+      pageList = [['hi'],
+                  ['friends', 'decide1', 'give1', 'give2'],
+                  ['distribute', 'decide2', 'take1', 'still', 'take2'],
+                  ['end']]
 
   function init() {
     $('img').attr('draggable', 'false')
@@ -254,7 +258,7 @@ var Exp = (function () {
         prevPage()
         break
       case arrow.right:
-        nextPage()
+        next()
         break
       case arrow.down:
         nextStory()
@@ -265,7 +269,21 @@ var Exp = (function () {
     })
   }
 
+  function next() {
+    // stop any playing audio
+    stopAudio()
+
+    if (stepIndex === (pageList[pageIndex].length - 1)) {
+      nextPage()
+    } else {
+      nextStep()
+    }
+  }
+
   function prevPage() {
+    // stop any playing audio
+    stopAudio()
+
     if (pageIndex === 0) {
       prevStory()
     } else {
@@ -305,7 +323,7 @@ var Exp = (function () {
     if (turnOn) {
       $('.page').on({
         'swipeleft': function (event) {
-          nextPage()
+          next()
         },
         'swiperight': function (event) {
           prevPage()
@@ -314,6 +332,14 @@ var Exp = (function () {
     } else {
       $('.page').off('swipeleft swiperight')
     }
+  }
+
+  function stopAudio() {
+    // stop any playing audio
+    $('audio').each(function () {
+      this.pause()
+      this.currentTime = 0
+    })
   }
 
   /************ Playing story *************/
@@ -329,9 +355,10 @@ var Exp = (function () {
     var story = RunInfo.getStory(storyIndex)
 
     //Remove dragged objects from targets, return to original positions
-    // Scene1
-    $('#objStart').append($('#scene1 .dragObj'))
-    $("#scene2 .char:not(:has('.dragObj'))").append($('#takeGoal .dragObj:first-child'))
+    $('.dragObj').css({
+      'left': '',
+      'top': ''
+    })
 
     setScene(story)
     setAudio(story)
@@ -344,24 +371,20 @@ var Exp = (function () {
 
     swipeNav(true)
 
+    // Reset undo button
+    $('.undoButton').hide()
+    $('.undoButton').unbind('click')
+
     stepIndex = 0
 
-    // stop any playing audio, and start page narration
-    $('audio').each(function () {
-      this.pause()
-      this.currentTime = 0
-    })
+   // start page narration
     playNarration(step())
   }
 
   // Within-page progress
 
   function step() {
-    var pages = [['hi'],
-                 ['friends', 'decide1', 'give1', 'give2'],
-                 ['distribute', 'decide2', 'take1', 'still', 'take2'],
-                 ['end']]
-    return pages[pageIndex][stepIndex]
+    return pageList[pageIndex][stepIndex]
   }
 
   function setTransitions() {
@@ -374,13 +397,10 @@ var Exp = (function () {
   }
 
   function nextStep() {
-    var s
-
     stepIndex++
-    s = step()
 
     // Add visuals if necessary
-    switch (s) {
+    switch (step()) {
     case 'give1':
       $('#giveObj1').show()
       break
@@ -393,14 +413,18 @@ var Exp = (function () {
       break
     }
 
+    // Reset undo button
+    $('.undoButton').hide()
+    $('.undoButton').unbind('click')
+
     // Play audio
-    playNarration(s)
+    playNarration(step())
   }
 
   // ******** Story Visuals *********//
   $scene = {
     title: $('#title h1'),
-    introNarr: $('#introNarr img'),
+    introNarr: $('.introNarr > img'),
     scene1Bg: $('#scene1 .backgroundImg'),
     narr: $('.narrator img'),
     c1: $('.c1 img'),
@@ -432,7 +456,7 @@ var Exp = (function () {
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
-    $('.doneButton').hide()
+    $('.undoButton').hide()
   }
 
   // Drag and drop functionality //
@@ -454,56 +478,35 @@ var Exp = (function () {
 
   function drop(ev, ui) {
     var dragged = ui.draggable[0],
-        sourceId = dragged.parentElement.id,
-        $source = $('#' + sourceId),
+        $dragged = $('#' + dragged.id),
         targetId = ev.target.id,
         $target = $('#' + targetId)
 
-    // add to drop target
-    $target.append(dragged)
-    //dragged.style.height = '40%'
-    //dragged.style.marginLeft = '-10%'
-    dragged.style.top = '0'
-    dragged.style.left = '0'
+    // Don't allow the dragged item to be moved again
+    $dragged.draggable('disable')
 
-    //disable dropping on the current target
+    // Disable dropping on the current target if it's a character
     $target.css('border', 'none')
-    $target.droppable('disable')
-
-    //enable dropping on the source of the current drag
-    // (for "undoing")
-    if ($source.hasClass('ui-droppable')) {
-      $source.droppable('enable')
+    if ($target.hasClass('char')) {
+      $target.droppable('disable')
     }
 
-    // Record response and allow "done" if the target
+    // Record response and allow "undo" if the target
     // is one of the intended targets
-    if (!(ev.target.classList.contains('charObj'))) {
-      RunInfo.recordResponse(storyIndex, step(), sourceId, targetId)
-      $('.doneButton').show()
-      $('.doneButton').click(function () {
-        doneDragging($target)
-      })
-    }
+    RunInfo.recordResponse(storyIndex, step(), dragged.id, targetId)
+    $('.undoButton').show()
+    $('.undoButton').click(function () {
+        undoDrag($dragged, $target)
+    })
   }
 
-  function doneDragging($droppedTarget) {
-    console.log("done dragging: clicked")
-    var s = step()
-    $('.doneButton').hide()
-
-    if (s === 'give1') {
-      $('.dragObj').draggable('destroy')
-      $droppedTarget.droppable('disable')
-      nextStep()
-    } else if (s === 'take1') {
-      $droppedTarget.droppable('enable')
-      $('#scene2 .char').droppable('disable')
-      nextStep()
-    } else {
-      console.log("done dragging: starting next page")
-      nextPage()
-    }
+  function undoDrag($draggedItem, $target) {
+    $draggedItem.css({
+      'left': '',
+      'top': ''
+    })
+    $draggedItem.draggable('enable')
+    $target.droppable('enable')
   }
 
   function startDragging() {
