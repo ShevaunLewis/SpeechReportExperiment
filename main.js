@@ -3,9 +3,7 @@
 // add ending for experiment
 // add status bar update
 // fix handling of multiple drags in one response
-// reset positions of dragged elements after each story
 // fix display of characters relative to background/scene
-// make sure audio restarts if you go back
 // add button to mark when experimenter is fixing child's response
 
 // Module for subject info form
@@ -293,6 +291,7 @@ var Exp = (function () {
   }
 
   function nextPage() {
+    $pages[pageIndex].hide()
     if (pageIndex === 3) {
       nextStory()
     } else {
@@ -366,9 +365,6 @@ var Exp = (function () {
 
   // Start audio for page
   function startPage() {
-    $('.page').hide()
-    $pages[pageIndex].show()
-
     swipeNav(true)
 
     // Reset undo button
@@ -377,12 +373,14 @@ var Exp = (function () {
 
     stepIndex = 0
 
-   // start page narration
-    playNarration(step())
+    $pages[pageIndex].fadeIn(800, "linear", function () {
+      // start page narration
+      playNarration(step())
+    })
+
   }
 
   // Within-page progress
-
   function step() {
     return pageList[pageIndex][stepIndex]
   }
