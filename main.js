@@ -1,5 +1,4 @@
 // notes:
-// fix recordResponse for take actions
 // add ending for experiment
 // add status bar update
 // fix handling of multiple drags in one response
@@ -320,7 +319,7 @@ var Exp = (function () {
 
   function swipeNav(turnOn) {
     if (turnOn) {
-      $('.page').on({
+      $pages[pageIndex].on({
         'swipeleft': function (event) {
           next()
         },
@@ -329,7 +328,7 @@ var Exp = (function () {
         }
       })
     } else {
-      $('.page').off('swipeleft swiperight')
+      $pages[pageIndex].off('swipeleft swiperight')
     }
   }
 
@@ -496,6 +495,8 @@ var Exp = (function () {
     $('.undoButton').click(function () {
         undoDrag($dragged, $target)
     })
+
+    swipeNav(true)
   }
 
   function undoDrag($draggedItem, $target) {
