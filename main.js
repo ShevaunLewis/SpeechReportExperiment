@@ -266,6 +266,16 @@ var Exp = (function () {
     })
   }
 
+  // Swipe navigation
+  $(window).on({
+    'swipeleft': function (event) {
+      next()
+    },
+    'swiperight': function (event) {
+      prevPage()
+    }
+  })
+
   function next() {
     // stop any playing audio
     stopAudio()
@@ -328,22 +338,22 @@ var Exp = (function () {
     pageIndex = 0
   }
 
-  function swipeNav(turnOn) {
-    if (turnOn) {
-      console.log("swipe navigation on")
-      $(window).on({
-        'swipeleft': function (event) {
-          next()
-        },
-        'swiperight': function (event) {
-          prevPage()
-        }
-      })
-    } else {
-      console.log("swipe navigation off")
-      $(window).off('swipeleft swiperight')
-    }
-  }
+//   function swipeNav(turnOn) {
+//     if (turnOn) {
+//       console.log("swipe navigation on")
+//       $(window).on({
+//         'swipeleft': function (event) {
+//           next()
+//         },
+//         'swiperight': function (event) {
+//           prevPage()
+//         }
+//       })
+//     } else {
+//       console.log("swipe navigation off")
+//       $(window).off('swipeleft swiperight')
+//     }
+//   }
 
   function stopAudio() {
     // stop any playing audio
@@ -358,7 +368,7 @@ var Exp = (function () {
   function startExp() {
     $('#book').show()
     setStory()
-    swipeNav(true)
+    //swipeNav(true)
     startPage()
   }
 
@@ -508,7 +518,7 @@ var Exp = (function () {
         undoDrag($dragged, $target)
     })
 
-    swipeNav(true)
+    //swipeNav(true)
   }
 
   function undoDrag($draggedItem, $target) {
@@ -527,7 +537,7 @@ var Exp = (function () {
     })
 
     //Disable swipe navigation
-    swipeNav(false)
+    //swipeNav(false)
   }
 
   // ********* Story Narration ***********//
