@@ -278,6 +278,9 @@ var Exp = (function () {
   }
 
   function prevPage() {
+    // hide current page
+    $pages[pageIndex].hide()
+
     // stop any playing audio
     stopAudio()
 
@@ -290,7 +293,9 @@ var Exp = (function () {
   }
 
   function nextPage() {
+    // hide current page
     $pages[pageIndex].hide()
+
     if (pageIndex === 3) {
       nextStory()
     } else {
@@ -300,6 +305,9 @@ var Exp = (function () {
   }
 
   function nextStory() {
+    // hide current page
+    $pages[pageIndex].hide()
+
     if (storyIndex < 7) {
       storyIndex++
       setStory()
@@ -310,6 +318,9 @@ var Exp = (function () {
   }
 
   function prevStory() {
+    // hide current page
+    $pages[pageIndex].hide()
+
     if (storyIndex > 0) {
       storyIndex--
     }
@@ -319,7 +330,8 @@ var Exp = (function () {
 
   function swipeNav(turnOn) {
     if (turnOn) {
-      $pages[pageIndex].on({
+      console.log("swipe navigation on")
+      $(window).on({
         'swipeleft': function (event) {
           next()
         },
@@ -328,7 +340,8 @@ var Exp = (function () {
         }
       })
     } else {
-      $pages[pageIndex].off('swipeleft swiperight')
+      console.log("swipe navigation off")
+      $(window).off('swipeleft swiperight')
     }
   }
 
@@ -345,6 +358,7 @@ var Exp = (function () {
   function startExp() {
     $('#book').show()
     setStory()
+    swipeNav(true)
     startPage()
   }
 
@@ -364,8 +378,6 @@ var Exp = (function () {
 
   // Start audio for page
   function startPage() {
-    swipeNav(true)
-
     // Reset undo button
     $('.undoButton').hide()
     $('.undoButton').unbind('click')
