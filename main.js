@@ -225,8 +225,9 @@ var Exp = (function () {
       pageIndex = 0,
       $scene,
       $storyAudio,
-      $pages = [$('#intro'), $('#scene1'), $('#scene2'), $('#end')],
-      pageList = [['hi'],
+      $pages = [$('#title'), $('#intro'), $('#scene1'), $('#scene2'), $('#end')],
+      pageList = [['title'],
+                  ['hi'],
                   ['friends', 'decide1', 'give1', 'give2'],
                   ['distribute', 'decide2', 'take1', 'still', 'take2'],
                   ['end']]
@@ -555,8 +556,9 @@ var Exp = (function () {
   }
 
   function playNarration(step) {
-    $storyAudio[step][0].play()
-    console.log(pageIndex, stepIndex)
+    if (step in $storyAudio) {
+      $storyAudio[step][0].play()
+    }
   }
 
   function endExperiment() {
