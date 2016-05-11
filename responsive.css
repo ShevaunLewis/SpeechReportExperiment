@@ -49,12 +49,14 @@ div.char {
     position: absolute;
 }
 
+/*
 div.charObj {
     height: 30%;
     display: inline-block;
     z-index: 1;
     margin-left: -10%;
 }
+ */
 
 .introNarr {
     position: absolute;

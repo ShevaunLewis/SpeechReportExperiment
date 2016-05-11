@@ -52,7 +52,7 @@ var RunInfo = (function () {
   var subjInfo,
       stories,
       images,
-      responses = []
+      responses =[]
 
   function setExpInfo(s, i) {
     stories = s
@@ -99,6 +99,7 @@ var RunInfo = (function () {
     var trialInfo = [subjInfo.subjId,
       subjInfo.date,
       subjInfo.script,
+      responses.length + 1,
       stories[storyIndex].storyId,
       step,
       stories[storyIndex].scriptConds[subjInfo.script],
@@ -115,7 +116,7 @@ var RunInfo = (function () {
         filename = 'SR_' + subjInfo.subjId + '.csv'
 
     csv = Papa.unparse({
-      fields: ['subjId', 'date', 'script', 'storyId', 'phase', 'cond',
+      fields: ['subjId', 'date', 'script', 'respIndex', 'storyId', 'phase', 'cond',
         'objSource', 'target'],
       data: responses
     })
@@ -232,6 +233,7 @@ var Exp = (function () {
 
   function init() {
     $('img').attr('draggable', 'false')
+    initDragDrop()
     setTransitions()
     $('#book').hide()
     $('.page').hide()
@@ -252,108 +254,44 @@ var Exp = (function () {
 
       switch (keyCode) {
       case arrow.left:
-        prevPage()
+        prev()
         break
       case arrow.right:
         next()
         break
       case arrow.down:
+        stopAudio()
         nextStory()
         break
       case arrow.up:
+        stopAudio()
         prevStory()
+      }
+    })
+
+    // Swipe navigation
+    $(window).on({
+      'swipeleft': function (event) {
+        next()
+      },
+      'swiperight': function (event) {
+        prev()
       }
     })
   }
 
-  // Swipe navigation
-  $(window).on({
-    'swipeleft': function (event) {
-      next()
-    },
-    'swiperight': function (event) {
-      prevPage()
-    }
-  })
-
-  function next() {
-    // stop any playing audio
-    stopAudio()
-
-    if (stepIndex === (pageList[pageIndex].length - 1)) {
-      nextPage()
-    } else {
-      nextStep()
-    }
-  }
-
-  function prevPage() {
+  function leavePage() {
     // hide current page
     $pages[pageIndex].hide()
 
-    // stop any playing audio
-    stopAudio()
+    // For pages where dragging may have happened
+    if ((pageIndex === 1) || (pageIndex === 2)) {
+      undoDrag($('.dragObj'))
 
-    if (pageIndex === 0) {
-      prevStory()
-    } else {
-      pageIndex--
-    }
-    startPage()
-  }
-
-  function nextPage() {
-    // hide current page
-    $pages[pageIndex].hide()
-
-    if (pageIndex === 3) {
-      nextStory()
-    } else {
-      pageIndex++
-    }
-    startPage()
-  }
-
-  function nextStory() {
-    // hide current page
-    $pages[pageIndex].hide()
-
-    if (storyIndex < 7) {
-      storyIndex++
-      setStory()
-      pageIndex = 0
-    } else {
-      endExperiment()
+      // Rehide scene1 drag objects
+      $('#scene1 .dragObj').hide()
     }
   }
-
-  function prevStory() {
-    // hide current page
-    $pages[pageIndex].hide()
-
-    if (storyIndex > 0) {
-      storyIndex--
-    }
-    setStory()
-    pageIndex = 0
-  }
-
-//   function swipeNav(turnOn) {
-//     if (turnOn) {
-//       console.log("swipe navigation on")
-//       $(window).on({
-//         'swipeleft': function (event) {
-//           next()
-//         },
-//         'swiperight': function (event) {
-//           prevPage()
-//         }
-//       })
-//     } else {
-//       console.log("swipe navigation off")
-//       $(window).off('swipeleft swiperight')
-//     }
-//   }
 
   function stopAudio() {
     // stop any playing audio
@@ -363,12 +301,73 @@ var Exp = (function () {
     })
   }
 
+  function next() {
+    stopAudio()
+    if (pageIndex === (pageList.length - 1)) {
+      nextStory()
+    } else if (stepIndex === (pageList[pageIndex].length - 1)) {
+      nextPage()
+    } else {
+      nextStep()
+    }
+  }
+
+  function nextPage() {
+    leavePage()
+    pageIndex++
+    startPage()
+  }
+
+  function nextStory() {
+    leavePage()
+    if (storyIndex < 7) {
+      storyIndex++
+      setStory()
+      pageIndex = 0
+      startPage()
+    } else {
+      endExperiment()
+    }
+  }
+
+  function prev() {
+    if (pageIndex === 0) {
+      prevStory()
+    } else {
+      prevPage()
+    }
+  }
+
+  function prevPage() {
+    stopAudio()
+    leavePage()
+
+    // If you're already on the first step of the page,
+    // go back to the previous page. Otherwise just
+    // restart the page.
+    if (stepIndex === 0) {
+      pageIndex--
+    }
+    startPage()
+  }
+
+  function prevStory() {
+    stopAudio()
+    leavePage()
+
+    if (storyIndex > 0) {
+      storyIndex--
+    }
+    setStory()
+    pageIndex = 0
+    startPage()
+  }
+
   /************ Playing story *************/
   // Start Experiment (public)
   function startExp() {
     $('#book').show()
     setStory()
-    //swipeNav(true)
     startPage()
   }
 
@@ -376,29 +375,18 @@ var Exp = (function () {
   function setStory() {
     var story = RunInfo.getStory(storyIndex)
 
-    //Remove dragged objects from targets, return to original positions
-    $('.dragObj').css({
-      'left': '',
-      'top': ''
-    })
-
     setScene(story)
     setAudio(story)
   }
 
   // Start audio for page
   function startPage() {
-    // Reset undo button
-    $('.undoButton').hide()
-    $('.undoButton').unbind('click')
-
     stepIndex = 0
 
     $pages[pageIndex].fadeIn(800, "linear", function () {
-      // start page narration
+      // start page narration after fade in is complete
       playNarration(step())
     })
-
   }
 
   // Within-page progress
@@ -416,20 +404,12 @@ var Exp = (function () {
   }
 
   function nextStep() {
+    stopAudio()
     stepIndex++
 
     // Add visuals if necessary
-    switch (step()) {
-    case 'give1':
-      $('#giveObj1').show()
-      break
-    case 'give2':
-      $('#giveObj2').show()
-      break
-    case 'decide2':
-      $scene.takeGoal.show()
-      $scene.takeObjs.show()
-      break
+    if (step() in $scene) {
+      $scene[step()].show()
     }
 
     // Reset undo button
@@ -452,26 +432,25 @@ var Exp = (function () {
     giveObj2: $('#giveObj2'),
     scene2Bg: $('#scene2 .backgroundImg'),
     takeGoal: $('#takeGoal img'),
-    takeObjs: $('#scene2 .dragObj')
+    takeObjs: $('#scene2 .dragObj'),
+
+    // access visuals by their step name
+    give1: $('#giveObj1'),
+    give2: $('#giveObj2'),
+    decide2: $('#takeGoal img, #scene2 .dragObj')
   }
 
   function setScene(story) {
     $scene.title.text(story.title)
     $scene.introNarr.attr('src', story.narrator)
-
     $scene.scene1Bg.attr('src', story.bg1)
     $scene.narr.attr('src', story.narrator)
     $scene.c1.attr('src', story.c1)
     $scene.c2.attr('src', story.c2)
     $scene.giveObj1.attr('src', story.giveObj1)
     $scene.giveObj2.attr('src', story.giveObj2)
-
     $scene.scene2Bg.attr('src', story.bg2)
     $scene.takeGoal.attr('src', story.takeTarget)
-    addDropTargets('.char, #takeGoal, .charObj')
-    $('.charObj').droppable('disable')
-    $('#scene1 .char').droppable('enable')
-    $('#scene2 .char').droppable('disable')
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
@@ -479,8 +458,8 @@ var Exp = (function () {
   }
 
   // Drag and drop functionality //
-  function addDropTargets(targetSelector) {
-    $(targetSelector).droppable({
+  function initDragDrop() {
+    $('#scene1 .char, #takeGoal').droppable({
       accept: '.dragObj',
       activate: function (event, ui) {
         event.target.style.border = 'medium dashed yellow'
@@ -493,51 +472,61 @@ var Exp = (function () {
       },
       tolerance: 'touch'
     })
+
+    // Initialize all draggable objects
+    initDraggables($('.dragObj'))
+
+    // Hide undo button
+    $('.undoButton').hide()
+  }
+
+  function initDraggables($draggables) {
+    $draggables.draggable({
+      containment: 'document',
+      revert: 'invalid',
+      disabled: true
+    })
   }
 
   function drop(ev, ui) {
     var dragged = ui.draggable[0],
         $dragged = $('#' + dragged.id),
-        targetId = ev.target.id,
-        $target = $('#' + targetId)
+        targetId = ev.target.id
 
-    // Don't allow the dragged item to be moved again
-    $dragged.draggable('disable')
+    // Add "dragged" class to dragged item, destroy draggability
+    $dragged.addClass('dragged').draggable('destroy')
 
-    // Disable dropping on the current target if it's a character
-    $target.css('border', 'none')
-    if ($target.hasClass('char')) {
-      $target.droppable('disable')
-    }
+    // Disable all the undragged draggable objects
+    $('.dragObj:not(.dragged)').draggable('disable')
 
-    // Record response and allow "undo" if the target
-    // is one of the intended targets
+    // Record response
     RunInfo.recordResponse(storyIndex, step(), dragged.id, targetId)
+
+    // Show undo button
     $('.undoButton').show()
     $('.undoButton').click(function () {
-        undoDrag($dragged, $target)
+        undoDrag($dragged)
     })
-
-    //swipeNav(true)
   }
 
-  function undoDrag($draggedItem, $target) {
-    $draggedItem.css({
+  function undoDrag($draggedItems) {
+    $draggedItems.css({
       'left': '',
       'top': ''
     })
-    $draggedItem.draggable('enable')
-    $target.droppable('enable')
+    $draggedItems.removeClass('dragged')
+    initDraggables($draggedItems)
+
+    // Reset undo button
+    $('.undoButton').hide()
+    $('.undoButton').unbind('click')
+
+    startDragging()
   }
 
   function startDragging() {
-    $('.dragObj').draggable({
-      containment: 'document',
-      revert: 'invalid'
-    })
-
-    //Disable swipe navigation
-    //swipeNav(false)
+    // Enable dragging for any draggables that haven't been destroyed
+    $('.dragObj:not(.dragged)').draggable('enable')
   }
 
   // ********* Story Narration ***********//
