@@ -1,9 +1,9 @@
 // notes:
 // add ending for experiment
 // add status bar update
-// fix handling of multiple drags in one response
-// fix display of characters relative to background/scene
 // add button to mark when experimenter is fixing child's response
+// add button to replay target sentence
+
 
 // Module for subject info form
 var SubjForm = (function () {
