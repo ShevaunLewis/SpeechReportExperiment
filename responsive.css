@@ -25,6 +25,18 @@ fieldset {
 
 /* Specific to the Speech Reports webapp */
 
+body {
+    margin: 0;
+}
+
+.checkChar {
+    height: 40%;
+    display: inline-block;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 20%;
+}
+
 #book {
     position: relative;
     height: 90vh;
@@ -49,15 +61,6 @@ div.char {
     position: absolute;
 }
 
-/*
-div.charObj {
-    height: 30%;
-    display: inline-block;
-    z-index: 1;
-    margin-left: -10%;
-}
- */
-
 .introNarr {
     position: absolute;
     height: 40%;
@@ -65,26 +68,9 @@ div.charObj {
     left: 40%;
 }
 
-.narrator {
-    bottom:7%;
-    left:5%;
-}
-
-.c1 {
-    bottom: 28%;
-    left: 33%;
-}
-
-.c2 {
-    bottom: 7%;
-    left: 60%;
-}
-
 .objStart {
     height: 14%;
     position: absolute;
-    bottom: 7%;
-    left: 33%;
 }
 
 .objStart img {
@@ -92,20 +78,9 @@ div.charObj {
 }
 
 #takeGoal {
-    height: 25%;
+    height: 22%;
     position: absolute;
-    top: 40%;
-    right: 4%;
     z-index: 0;
-}
-
-#takeGoal .dropSpot {
-    margin-left: 0;
-    margin-right: -10%;
-}
-
-#takeGoal .dropSpot img {
-    display: block;
 }
 
 .dragObj {
@@ -126,6 +101,12 @@ div.charObj {
 }
 
 .undoButton {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.cornerButton {
     position: absolute;
     bottom: 10px;
     right: 10px;

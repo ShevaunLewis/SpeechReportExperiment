@@ -16,7 +16,6 @@ var SubjForm = (function () {
       updateSubjInfoBar()
       hideForm()
       RunInfo.setSubjInfo(subjInfo)
-      $(".book").show()
       Exp.startExp()
     })
   }
@@ -89,7 +88,11 @@ var RunInfo = (function () {
       bg2: images[s.bg2],
       takeTarget: images[s.takeTarget],
       takeObj: images[s.takeObj],
-      audio: audio
+      audio: audio,
+      takeTargetPos: [s.takeTargetLeft, s.takeTargetBottom],
+      c1Pos: [s.c1Left, s.c1Bottom],
+      c2Pos: [s.c2Left, s.c2Bottom],
+      narrPos: [s.narrLeft, s.narrBottom]
     }
 
     return story
@@ -119,11 +122,13 @@ var RunInfo = (function () {
       fields: ['subjId', 'date', 'script', 'respIndex', 'storyId', 'phase', 'cond',
         'objSource', 'target'],
       data: responses
+    },
+    {
+      newline: "\n"
     })
     encodedUri = encodeURI(csv)
-
     link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
+    link.setAttribute('href', 'data:text/csv;charset=utf-8, ' + encodedUri)
     link.setAttribute('download', filename)
     link.click()
   }
@@ -206,7 +211,7 @@ var ExpInfo = (function () {
       complete: function (results) {
         var scripts = results.data
         storyArray.forEach(function (it) {
-          it.scriptConds = scripts[it.storyId - 1]
+          it.scriptConds = scripts[it.storyId]
         })
 
         // set RunInfo only after this has completed.
@@ -238,6 +243,9 @@ var Exp = (function () {
     setTransitions()
     $('#book').hide()
     $('.page').hide()
+    $('#title .cornerButton').click(function () {
+      checkCharacters()
+    })
     initNav()
   }
 
@@ -364,6 +372,16 @@ var Exp = (function () {
     startPage()
   }
 
+  /********* Show character check **********/
+  function checkCharacters() {
+    $('#title').hide()
+    $('#characterCheck').show()
+    $('#characterCheck .cornerButton').click(function () {
+      $('#characterCheck').hide()
+      $('#title').show()
+    })
+  }
+
   /************ Playing story *************/
   // Start Experiment (public)
   function startExp() {
@@ -452,10 +470,22 @@ var Exp = (function () {
     $scene.giveObj2.attr('src', story.giveObj2)
     $scene.scene2Bg.attr('src', story.bg2)
     $scene.takeGoal.attr('src', story.takeTarget)
+    setPos('#takeGoal', story.takeTargetPos)
+    setPos('.char.narrator', story.narrPos)
+    setPos('.char.c1', story.c1Pos)
+    setPos('.char.c2', story.c2Pos)
+    setPos('.objStart', [story.c1Pos[0], '5%'])
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
     $('.undoButton').hide()
+  }
+
+  function setPos(itemSelector, itemPos) {
+    $(itemSelector).css({
+      'left': itemPos[0],
+      'bottom': itemPos[1]
+    })
   }
 
   // Drag and drop functionality //

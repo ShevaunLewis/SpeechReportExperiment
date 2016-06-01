@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js demo-1">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+  <meta name="viewport" content="height=device-height, initial-scale=1.0, user-scalable=no">
   <title>Speech Report Experiment</title>
   <meta name="description" content="" />
   <meta name="author" content="Shevaun Lewis" />
@@ -35,6 +35,13 @@
 <div id="book">
   <div id="title" class="page" style="height:100%; text-align:center">
     <h1 style="top:40%; position:relative"></h1>
+    <button class="cornerButton">Check characters</button>
+  </div>
+  <div id="characterCheck" class="page" style="height:100%">
+    <div class="checkChar narrator"><img ></div>
+    <div class="checkChar c1"><img ></div>
+    <div class="checkChar c2"><img ></div>
+    <button class="cornerButton">Done</button>
   </div>
   <div id="intro" class="page" style="height:100%">
     <div class="introNarr"><img ></div>
@@ -104,11 +111,13 @@
 
 </div> <!-- book -->
 
+<!--
 <div id="statusBar">
   <hr/>
   <span id="subjInfo"></span>
   <span id="expStatus"></span>
 </div>
+ -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
