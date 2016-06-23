@@ -1,9 +1,6 @@
 // notes:
 // add ending for experiment
 // add status bar update
-// add button to mark when experimenter is fixing child's response
-// add button to replay target sentence
-
 
 // Module for subject info form
 var SubjForm = (function () {
@@ -242,7 +239,7 @@ var Exp = (function () {
     initDragDrop()
     setTransitions()
     $('#book').hide()
-    $('.page').hide()
+    $('.page, #characterCheck').hide()
     $('#title .cornerButton').click(function () {
       checkCharacters()
     })
@@ -279,11 +276,13 @@ var Exp = (function () {
     })
 
     // Swipe navigation
-    $(window).on({
+    $('#book').on({
       'swipeleft': function (event) {
+        console.log('swipeleft')
         next()
       },
       'swiperight': function (event) {
+        console.log('swiperight')
         prev()
       }
     })
@@ -474,7 +473,7 @@ var Exp = (function () {
     setPos('.char.narrator', story.narrPos)
     setPos('.char.c1', story.c1Pos)
     setPos('.char.c2', story.c2Pos)
-    setPos('.objStart', [story.c1Pos[0], '5%'])
+    setPos('#objStart', [story.c1Pos[0], '5%'])
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()

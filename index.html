@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="height=device-height, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Speech Report Experiment</title>
   <meta name="description" content="" />
   <meta name="author" content="Shevaun Lewis" />
@@ -15,7 +15,7 @@
  </head>
 
 <body>
-<form id="subjForm" style="margin:8px">
+<form id="subjForm">
  <p>Subject ID: <input type="text" id="subjID" size="3"><br/>
  <p> Date: <input type="text" id="date"></p>
  Script:
@@ -33,17 +33,17 @@
 </form>
 
 <div id="book">
-  <div id="title" class="page" style="height:100%; text-align:center">
+  <div id="title" class="page">
     <h1 style="top:40%; position:relative"></h1>
     <button class="cornerButton">Check characters</button>
   </div>
-  <div id="characterCheck" class="page" style="height:100%">
+  <div id="characterCheck">
     <div class="checkChar narrator"><img ></div>
     <div class="checkChar c1"><img ></div>
     <div class="checkChar c2"><img ></div>
     <button class="cornerButton">Done</button>
   </div>
-  <div id="intro" class="page" style="height:100%">
+  <div id="intro" class="page">
     <div class="introNarr"><img ></div>
     <audio id="introAudio"></audio>
   </div>
@@ -63,7 +63,7 @@
       <img id="giveObj1" class="dragObj">
       <img id="giveObj2" class="dragObj">
     </div>
-    <button class="undoButton"><i class="fa fa-undo fa-3x"></i></button>
+    <button class="undoButton cornerButton"><i class="fa fa-undo fa-3x"></i></button>
     <audio id="friendsAudio"></audio>
     <audio id="decide1Audio"></audio>
     <audio id="give1Audio"></audio>
@@ -92,7 +92,7 @@
     <audio id="take1Audio"></audio>
     <audio id="stillAudio"></audio>
     <audio id="take2Audio"></audio>
-    <button class="undoButton"><i class="fa fa-undo fa-3x"></i></button>
+    <button class="undoButton cornerButton"><i class="fa fa-undo fa-3x"></i></button>
   </div>
 
   <div id="end" class="page" style="height:100%; text-align:center">
@@ -120,9 +120,10 @@
  -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src="jsPkg/jquery.ui.touch-punch.min.js"></script>
-<script src="jsPkg/jquerypp.custom.js"></script>
+<!--<script src="jsPkg/jquery.ui.touch-punch.min.js"></script>
+<script src="jsPkg/jquerypp.custom.js"></script>-->
 <script src="jsPkg/papaparse.min.js"></script>
 <script src="main.js"></script>
 </body>
