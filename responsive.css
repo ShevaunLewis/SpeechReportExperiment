@@ -21,6 +21,10 @@ video {
     font-size:1.1em;
 }
 
+#subjForm div{
+    display: inline-block;
+}
+
 #book {
     position: fixed;
     height: 100vh;

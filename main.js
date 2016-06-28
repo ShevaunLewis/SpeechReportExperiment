@@ -1,12 +1,18 @@
 // notes:
 // add ending for experiment
 // add status bar update
+// add button to mark when experimenter is fixing child's response
+// add button to replay target sentence
+
 
 // Module for subject info form
 var SubjForm = (function () {
   var subjInfo = {}
 
   function init() {
+    $(document).on("pageshow", "[data-role='page']", function () {
+      $('div.ui-loader').remove();
+    });
     initFormatting()
     $('#submitForm').click(function () {
       saveInfo()
@@ -239,7 +245,8 @@ var Exp = (function () {
     initDragDrop()
     setTransitions()
     $('#book').hide()
-    $('.page, #characterCheck').hide()
+    $('#characterCheck').hide()
+    $('.page').hide()
     $('#title .cornerButton').click(function () {
       checkCharacters()
     })
@@ -276,13 +283,11 @@ var Exp = (function () {
     })
 
     // Swipe navigation
-    $('#book').on({
+    $('.page').on({
       'swipeleft': function (event) {
-        console.log('swipeleft')
         next()
       },
       'swiperight': function (event) {
-        console.log('swiperight')
         prev()
       }
     })
@@ -293,8 +298,8 @@ var Exp = (function () {
     $pages[pageIndex].hide()
 
     // For pages where dragging may have happened
-    if ((pageIndex === 1) || (pageIndex === 2)) {
-      undoDrag($('.dragObj'))
+    if ((pageIndex === 2) || (pageIndex === 3)) {
+      undoDrag($('.dragObj'), $('#scene1 .char, #takeGoal'))
 
       // Rehide scene1 drag objects
       $('#scene1 .dragObj').hide()
@@ -465,6 +470,7 @@ var Exp = (function () {
     $scene.narr.attr('src', story.narrator)
     $scene.c1.attr('src', story.c1)
     $scene.c2.attr('src', story.c2)
+    $('#giveObj1, #giveObj2').removeAttr('style')
     $scene.giveObj1.attr('src', story.giveObj1)
     $scene.giveObj2.attr('src', story.giveObj2)
     $scene.scene2Bg.attr('src', story.bg2)
@@ -473,7 +479,7 @@ var Exp = (function () {
     setPos('.char.narrator', story.narrPos)
     setPos('.char.c1', story.c1Pos)
     setPos('.char.c2', story.c2Pos)
-    setPos('#objStart', [story.c1Pos[0], '5%'])
+    setPos('.objStart', [story.c1Pos[0], '5%'])
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
@@ -521,10 +527,17 @@ var Exp = (function () {
   function drop(ev, ui) {
     var dragged = ui.draggable[0],
         $dragged = $('#' + dragged.id),
-        targetId = ev.target.id
+        targetId = ev.target.id,
+        $target = $('#' + targetId)
 
     // Add "dragged" class to dragged item, destroy draggability
     $dragged.addClass('dragged').draggable('destroy')
+
+    // Destroy droppability if on scene1 (pageIndex 2)
+    if (pageIndex == 2) {
+      $target.droppable('disable')
+      $target.css('border', 'none')
+    }
 
     // Disable all the undragged draggable objects
     $('.dragObj:not(.dragged)').draggable('disable')
@@ -535,17 +548,18 @@ var Exp = (function () {
     // Show undo button
     $('.undoButton').show()
     $('.undoButton').click(function () {
-        undoDrag($dragged)
+      undoDrag($dragged, $target)
     })
   }
 
-  function undoDrag($draggedItems) {
+  function undoDrag($draggedItems, $dropTargets) {
     $draggedItems.css({
       'left': '',
       'top': ''
     })
     $draggedItems.removeClass('dragged')
     initDraggables($draggedItems)
+    $dropTargets.droppable('enable')
 
     // Reset undo button
     $('.undoButton').hide()
