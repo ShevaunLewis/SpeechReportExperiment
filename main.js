@@ -103,14 +103,16 @@ var RunInfo = (function () {
 
   function recordResponse(storyIndex, step, object, target) {
     var trialInfo = [subjInfo.subjId,
-      subjInfo.date,
-      subjInfo.script,
-      responses.length + 1,
-      stories[storyIndex].storyId,
-      step,
-      stories[storyIndex].scriptConds[subjInfo.script],
-      object,
-      target]
+                     subjInfo.date,
+                     subjInfo.script,
+                     responses.length + 1,
+                     stories[storyIndex].storyId,
+                     step,
+                     stories[storyIndex].scriptConds[subjInfo.script],
+                     object,
+                     target,
+                     $('#expButton').prop('checked') ? 1 : 0
+                    ]
     responses.push(trialInfo)
     console.log(responses)
   }
@@ -123,7 +125,7 @@ var RunInfo = (function () {
 
     csv = Papa.unparse({
       fields: ['subjId', 'date', 'script', 'respIndex', 'storyId', 'phase', 'cond',
-        'objSource', 'target'],
+               'objSource', 'target', 'expMove'],
       data: responses
     },
     {
@@ -247,14 +249,17 @@ var Exp = (function () {
     $('#book').hide()
     $('#characterCheck').hide()
     $('.page').hide()
-    $('#title .cornerButton').click(function () {
-      checkCharacters()
+    $('.charButton').click(function () {
+      $('#title').toggle()
+      $('#characterCheck').toggle()
     })
-    initNav()
+    enableKeyNav()
+    enableSwipeNav()
+    $('#expButton').button()
   }
 
   /********** Story navigation ************/
-  function initNav() {
+  function enableKeyNav() {
     // Keyboard navigation
     $(document).keydown(function (e) {
       var keyCode = e.keyCode || e.which,
@@ -273,15 +278,15 @@ var Exp = (function () {
         next()
         break
       case arrow.down:
-        stopAudio()
         nextStory()
         break
       case arrow.up:
-        stopAudio()
         prevStory()
       }
     })
+  }
 
+  function enableSwipeNav() {
     // Swipe navigation
     $('.page').on({
       'swipeleft': function (event) {
@@ -293,7 +298,20 @@ var Exp = (function () {
     })
   }
 
+  function disableSwipeNav() {
+    $('.page').off('swipeleft')
+    $('.page').off('swiperight')
+  }
+
   function leavePage() {
+    // stop any playing audio
+    stopAudio()
+
+    // hide the character check page if it's visible
+    if ($('#characterCheck').is(':visible')) {
+      $('#characterCheck').toggle()
+    }
+
     // hide current page
     $pages[pageIndex].hide()
 
@@ -307,7 +325,6 @@ var Exp = (function () {
   }
 
   function stopAudio() {
-    // stop any playing audio
     $('audio').each(function () {
       this.pause()
       this.currentTime = 0
@@ -315,7 +332,6 @@ var Exp = (function () {
   }
 
   function next() {
-    stopAudio()
     if (pageIndex === (pageList.length - 1)) {
       nextStory()
     } else if (stepIndex === (pageList[pageIndex].length - 1)) {
@@ -352,7 +368,6 @@ var Exp = (function () {
   }
 
   function prevPage() {
-    stopAudio()
     leavePage()
 
     // If you're already on the first step of the page,
@@ -365,7 +380,6 @@ var Exp = (function () {
   }
 
   function prevStory() {
-    stopAudio()
     leavePage()
 
     if (storyIndex > 0) {
@@ -374,16 +388,6 @@ var Exp = (function () {
     setStory()
     pageIndex = 0
     startPage()
-  }
-
-  /********* Show character check **********/
-  function checkCharacters() {
-    $('#title').hide()
-    $('#characterCheck').show()
-    $('#characterCheck .cornerButton').click(function () {
-      $('#characterCheck').hide()
-      $('#title').show()
-    })
   }
 
   /************ Playing story *************/
@@ -436,8 +440,8 @@ var Exp = (function () {
     }
 
     // Reset undo button
-    $('.undoButton').hide()
-    $('.undoButton').unbind('click')
+    $('#undoButton').hide()
+    $('#undoButton').unbind('click')
 
     // Play audio
     playNarration(step())
@@ -483,7 +487,8 @@ var Exp = (function () {
     $scene.takeObjs.attr('src', story.takeObj)
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
-    $('.undoButton').hide()
+    $('#undoButton').hide()
+    $('#expButtonDiv').hide()
   }
 
   function setPos(itemSelector, itemPos) {
@@ -513,7 +518,7 @@ var Exp = (function () {
     initDraggables($('.dragObj'))
 
     // Hide undo button
-    $('.undoButton').hide()
+    $('#undoButton').hide()
   }
 
   function initDraggables($draggables) {
@@ -546,10 +551,17 @@ var Exp = (function () {
     RunInfo.recordResponse(storyIndex, step(), dragged.id, targetId)
 
     // Show undo button
-    $('.undoButton').show()
-    $('.undoButton').click(function () {
+    $('#undoButton').show()
+    $('#undoButton').click(function () {
       undoDrag($dragged, $target)
     })
+
+    // Hide experimenter move button
+    $('#expButton').prop('checked', true)
+    $('#expButtonDiv').hide()
+
+    // Re-enable swipe navigation
+    enableSwipeNav()
   }
 
   function undoDrag($draggedItems, $dropTargets) {
@@ -562,8 +574,8 @@ var Exp = (function () {
     $dropTargets.droppable('enable')
 
     // Reset undo button
-    $('.undoButton').hide()
-    $('.undoButton').unbind('click')
+    $('#undoButton').hide()
+    $('#undoButton').unbind('click')
 
     startDragging()
   }
@@ -571,6 +583,10 @@ var Exp = (function () {
   function startDragging() {
     // Enable dragging for any draggables that haven't been destroyed
     $('.dragObj:not(.dragged)').draggable('enable')
+    $('#expButtonDiv').show()
+
+    // disable swipe navigation
+    disableSwipeNav()
   }
 
   // ********* Story Narration ***********//

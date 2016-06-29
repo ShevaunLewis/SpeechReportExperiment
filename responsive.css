@@ -90,8 +90,11 @@ div.introNarr {
     margin-left: -10%;
 }
 
-button.cornerButton {
+button.cornerButton, #expButtonDiv {
     position: fixed;
     bottom: 10px;
     right: 10px;
 }
+
+
+    
