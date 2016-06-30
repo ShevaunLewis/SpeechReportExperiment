@@ -1,10 +1,3 @@
-// notes:
-// add ending for experiment
-// add status bar update
-// add button to mark when experimenter is fixing child's response
-// add button to replay target sentence
-
-
 // Module for subject info form
 var SubjForm = (function () {
   var subjInfo = {}
@@ -22,6 +15,7 @@ var SubjForm = (function () {
       Exp.startExp()
     })
   }
+
   function initFormatting() {
     $('#script').buttonset()
     $('#date').datepicker()
@@ -234,7 +228,8 @@ var Exp = (function () {
       stepIndex = 0,
       pageIndex = 0,
       $scene,
-      $storyAudio,
+      $storyAudio = $('#storyAudio'),
+      storyAudioFiles,
       $pages = [$('#title'), $('#intro'), $('#scene1'), $('#scene2'), $('#end')],
       pageList = [['title'],
                   ['hi'],
@@ -245,7 +240,9 @@ var Exp = (function () {
   function init() {
     $('img').attr('draggable', 'false')
     initDragDrop()
-    setTransitions()
+    $storyAudio.on('ended', function () {
+      afterAudio()
+    })
     $('#book').hide()
     $('#characterCheck').hide()
     $('.page').hide()
@@ -403,16 +400,18 @@ var Exp = (function () {
     var story = RunInfo.getStory(storyIndex)
 
     setScene(story)
-    setAudio(story)
+    storyAudioFiles = story.audio
   }
 
   // Start audio for page
   function startPage() {
     stepIndex = 0
 
+    setAudio(step())
+
     $pages[pageIndex].fadeIn(800, "linear", function () {
       // start page narration after fade in is complete
-      playNarration(step())
+      $storyAudio[0].play()
     })
   }
 
@@ -421,18 +420,21 @@ var Exp = (function () {
     return pageList[pageIndex][stepIndex]
   }
 
-  function setTransitions() {
-    $storyAudio.goAfterAudio.on('ended', function () {
+  function afterAudio() {
+    var step = pageList[pageIndex][stepIndex]
+    if (['friends', 'decide1', 'distribute', 'decide2', 'still'].indexOf(step) >  -1) {
       nextStep()
-    })
-    $storyAudio.dragAfterAudio.on('ended', function () {
+    } else if (['give1', 'give2', 'take1', 'take2'].indexOf(step) > -1) {
       startDragging()
-    })
+    }
   }
 
   function nextStep() {
     stopAudio()
     stepIndex++
+
+    // Update audio
+    setAudio(step())
 
     // Add visuals if necessary
     if (step() in $scene) {
@@ -444,7 +446,8 @@ var Exp = (function () {
     $('#undoButton').unbind('click')
 
     // Play audio
-    playNarration(step())
+    //playNarration(step())
+    $storyAudio[0].play()
   }
 
   // ******** Story Visuals *********//
@@ -590,33 +593,11 @@ var Exp = (function () {
   }
 
   // ********* Story Narration ***********//
-  $storyAudio = {
-    hi: $('#introAudio'),
-    friends: $('#friendsAudio'),
-    decide1: $('#decide1Audio'),
-    give1: $('#give1Audio'),
-    give2: $('#give2Audio'),
-    distribute: $('#distributeAudio'),
-    decide2: $('#decide2Audio'),
-    take1: $('#take1Audio'),
-    still: $('#stillAudio'),
-    take2: $('#take2Audio'),
-    end: $('#endAudio'),
-
-    goAfterAudio: $('#friendsAudio, #decide1Audio, #distributeAudio, #decide2Audio, #stillAudio'),
-    dragAfterAudio: $('#give1Audio, #give2Audio, #take1Audio, #take2Audio')
-  }
-
-  function setAudio(story) {
-    var key
-    for (key in $storyAudio) {
-      $storyAudio[key].attr('src', story.audio[key])
-    }
-  }
-
-  function playNarration(step) {
-    if (step in $storyAudio) {
-      $storyAudio[step][0].play()
+  function setAudio(step) {
+    if (step in storyAudioFiles) {
+      $storyAudio.attr('src', storyAudioFiles[step])
+    } else {
+      $storyAudio.attr('src', 'audio/empty.wav')
     }
   }
 

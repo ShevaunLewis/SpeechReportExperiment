@@ -16,9 +16,9 @@
 
 <body>
 <form id="subjForm">
- <p>Subject ID: <input type="text" id="subjID" size="3">
- <p> Date: <input type="text" id="date"></p>
- Script:
+  <p>Subject ID: <input type="text" id="subjID" size="3">
+  <p> Date: <input type="text" id="date"></p>
+  Script:
   <div id="script" style="display:inline-block;">
     <input type="radio" name="script" id="scriptA" value="a">
       <label for="scriptA">A</label>
@@ -30,6 +30,7 @@
       <label for="scriptD">Block-D</label>
   </div>
   <p><button id="submitForm">Submit</button></p>
+ 
 </form>
 
 <div id="book">
@@ -45,7 +46,6 @@
   </div>
   <div id="intro" class="page">
     <div class="introNarr"><img ></div>
-    <audio id="introAudio"></audio>
   </div>
 
   <div id="scene1" class="page">
@@ -63,10 +63,6 @@
       <img id="giveObj1" class="dragObj">
       <img id="giveObj2" class="dragObj">
     </div>
-    <audio id="friendsAudio"></audio>
-    <audio id="decide1Audio"></audio>
-    <audio id="give1Audio"></audio>
-    <audio id="give2Audio"></audio>
   </div>
 
   <div id="scene2" class="page">
@@ -86,17 +82,11 @@
     <div id="takeGoal">
       <img >
     </div>
-    <audio id="distributeAudio"></audio>
-    <audio id="decide2Audio"></audio>
-    <audio id="take1Audio"></audio>
-    <audio id="stillAudio"></audio>
-    <audio id="take2Audio"></audio>
   </div>
 
   <div id="end" class="page" style="height:100%; text-align:center">
     <h1 style="top:20%; position:relative">The end.</h1>
     <div class="introNarr"><img ></div>
-    <audio id="endAudio"></audio>
   </div>
 
   <div id="expButtonDiv">
@@ -104,24 +94,9 @@
     <label for="expButton">Exp move</label>
   </div>
   <button id="undoButton" class="cornerButton"><i class="fa fa-undo fa-3x"></i></button>
-
-  </div> <!-- bookblock -->
-
-  <!--<div>
-    <button id="prevPage"><i class="fa fa-arrow-left fa-lg"></i></button>
-    <button id="nextPage"><i class="fa fa-arrow-right fa-lg"></i></button>
-    <button id="nextStory"><i class="fa fa-step-forward fa-lg"></i></button>
-  </div> -->
+  <audio id="storyAudio"></audio>
 
 </div> <!-- book -->
-
-<!--
-<div id="statusBar">
-  <hr/>
-  <span id="subjInfo"></span>
-  <span id="expStatus"></span>
-</div>
- -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
