@@ -243,6 +243,9 @@ var Exp = (function () {
     $storyAudio.on('ended', function () {
       afterAudio()
     })
+    $('#playAudio').click(function () {
+      $storyAudio[0].play()
+    })
     $('#book').hide()
     $('#characterCheck').hide()
     $('.page').hide()
@@ -296,8 +299,7 @@ var Exp = (function () {
   }
 
   function disableSwipeNav() {
-    $('.page').off('swipeleft')
-    $('.page').off('swiperight')
+    $('.page').off()
   }
 
   function leavePage() {
@@ -314,7 +316,7 @@ var Exp = (function () {
 
     // For pages where dragging may have happened
     if ((pageIndex === 2) || (pageIndex === 3)) {
-      undoDrag($('.dragObj'), $('#scene1 .char, #takeGoal'))
+      undoDrag($('.dragObj'), $('#scene1 .char, #takeGoal'), false)
 
       // Rehide scene1 drag objects
       $('#scene1 .dragObj').hide()
@@ -329,6 +331,7 @@ var Exp = (function () {
   }
 
   function next() {
+    console.log('next')
     if (pageIndex === (pageList.length - 1)) {
       nextStory()
     } else if (stepIndex === (pageList[pageIndex].length - 1)) {
@@ -556,18 +559,18 @@ var Exp = (function () {
     // Show undo button
     $('#undoButton').show()
     $('#undoButton').click(function () {
-      undoDrag($dragged, $target)
+      undoDrag($dragged, $target, true)
     })
 
     // Hide experimenter move button
-    $('#expButton').prop('checked', true)
+    $('#expButton').prop('checked', false)
     $('#expButtonDiv').hide()
 
     // Re-enable swipe navigation
     enableSwipeNav()
   }
 
-  function undoDrag($draggedItems, $dropTargets) {
+  function undoDrag($draggedItems, $dropTargets, restart) {
     $draggedItems.css({
       'left': '',
       'top': ''
@@ -580,7 +583,9 @@ var Exp = (function () {
     $('#undoButton').hide()
     $('#undoButton').unbind('click')
 
-    startDragging()
+    if (restart) {
+      startDragging()
+    }
   }
 
   function startDragging() {
