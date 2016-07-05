@@ -349,7 +349,7 @@ var Exp = (function () {
 
   function nextStory() {
     leavePage()
-    if (storyIndex < 7) {
+    if (storyIndex < 8) {
       storyIndex++
       setStory()
       pageIndex = 0
