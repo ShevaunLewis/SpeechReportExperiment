@@ -246,6 +246,9 @@ var Exp = (function () {
     $('#playAudio').click(function () {
       $storyAudio[0].play()
     })
+    $('#replayButton').click(function () {
+      $storyAudio[0].play()
+    })
     $('#book').hide()
     $('#characterCheck').hide()
     $('.page').hide()
@@ -448,8 +451,10 @@ var Exp = (function () {
     $('#undoButton').hide()
     $('#undoButton').unbind('click')
 
+    // Show replay button
+    $('#replayButton').hide()
+
     // Play audio
-    //playNarration(step())
     $storyAudio[0].play()
   }
 
@@ -494,6 +499,7 @@ var Exp = (function () {
     $('#scene1 .dragObj').hide()
     $scene.takeGoal.hide()
     $('#undoButton').hide()
+    $('#replayButton').hide()
     $('#expButtonDiv').hide()
   }
 
@@ -523,8 +529,9 @@ var Exp = (function () {
     // Initialize all draggable objects
     initDraggables($('.dragObj'))
 
-    // Hide undo button
-    $('#undoButton').hide()
+    // // Hide undo button
+    // $('#undoButton').hide()
+    // $('#replayButton').hide()
   }
 
   function initDraggables($draggables) {
@@ -592,6 +599,9 @@ var Exp = (function () {
     // Enable dragging for any draggables that haven't been destroyed
     $('.dragObj:not(.dragged)').draggable('enable')
     $('#expButtonDiv').show()
+
+    // Show replay button
+    $('#replayButton').show()
 
     // disable swipe navigation
     disableSwipeNav()
