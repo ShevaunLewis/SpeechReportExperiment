@@ -101,4 +101,9 @@ button.cornerButton {
     bottom: 90px;
     right: 10px;
 }
-    
+
+#navButtons {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}

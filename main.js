@@ -257,7 +257,7 @@ var Exp = (function () {
       $('#characterCheck').toggle()
     })
     enableKeyNav()
-    enableSwipeNav()
+    enableButtonNav()
     $('#expButton').button()
   }
 
@@ -289,20 +289,19 @@ var Exp = (function () {
     })
   }
 
-  function enableSwipeNav() {
-    // Swipe navigation
-    $('.page').on({
-      'swipeleft': function (event) {
-        next()
-      },
-      'swiperight': function (event) {
-        prev()
-      }
+  function enableButtonNav() {
+    $('#prevStory').click(function () {
+      prevStory()
     })
-  }
-
-  function disableSwipeNav() {
-    $('.page').off()
+    $('#back').click(function () {
+      prev()
+    })
+    $('#forward').click(function () {
+      next()
+    })
+    $('#nextStory').click(function () {
+      nextStory()
+    })
   }
 
   function leavePage() {
@@ -572,9 +571,6 @@ var Exp = (function () {
     // Hide experimenter move button
     $('#expButton').prop('checked', false)
     $('#expButtonDiv').hide()
-
-    // Re-enable swipe navigation
-    enableSwipeNav()
   }
 
   function undoDrag($draggedItems, $dropTargets, restart) {
@@ -602,9 +598,6 @@ var Exp = (function () {
 
     // Show replay button
     $('#replayButton').show()
-
-    // disable swipe navigation
-    disableSwipeNav()
   }
 
   // ********* Story Narration ***********//
