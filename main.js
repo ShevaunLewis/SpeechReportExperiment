@@ -1,15 +1,18 @@
 // Module for subject info form
 var SubjForm = (function () {
   var subjInfo = {}
+  var script = ''
 
   function init() {
     $(document).on("pageshow", "[data-role='page']", function () {
       $('div.ui-loader').remove();
     });
     initFormatting()
+    $('input[type="radio"]').change(function () {
+      script = this.value
+    })
     $('#submitForm').click(function () {
       saveInfo()
-      updateSubjInfoBar()
       hideForm()
       RunInfo.setSubjInfo(subjInfo)
       Exp.startExp()
@@ -26,18 +29,12 @@ var SubjForm = (function () {
     subjInfo = {
       'subjId': $('#subjID').val(),
       'date': $('#date').val(),
-      'script': $('input[name="script"]').val()
+      'script': script
     }
   }
 
   function hideForm() {
     $('#subjForm').remove()
-  }
-
-  function updateSubjInfoBar() {
-    $('#subjInfo').html('Subj: ' + subjInfo.subjId +
-                        '         Date: ' + subjInfo.date +
-                        '         Script: ' + subjInfo.script)
   }
 
   return { init: init }
@@ -259,6 +256,23 @@ var Exp = (function () {
     enableKeyNav()
     enableButtonNav()
     $('#expButton').button()
+
+    $('#confirmEnd').dialog({
+      autoOpen: false,
+      resizable: false,
+      height: 'auto',
+      width: 400,
+      modal: true,
+      buttons: {
+        "End experiment": function() {
+          $(this).dialog('close')
+          endExperiment()
+        },
+        Cancel: function() {
+          $(this).dialog('close')
+        }
+      }
+    })
   }
 
   /********** Story navigation ************/
@@ -333,7 +347,6 @@ var Exp = (function () {
   }
 
   function next() {
-    console.log('next')
     if (pageIndex === (pageList.length - 1)) {
       nextStory()
     } else if (stepIndex === (pageList[pageIndex].length - 1)) {
@@ -347,6 +360,10 @@ var Exp = (function () {
     leavePage()
     pageIndex++
     startPage()
+
+    // Hide replay button
+    $('#replayButton').hide()
+
   }
 
   function nextStory() {
@@ -357,7 +374,7 @@ var Exp = (function () {
       pageIndex = 0
       startPage()
     } else {
-      endExperiment()
+      $('#confirmEnd').dialog('open')
     }
   }
 
@@ -450,7 +467,7 @@ var Exp = (function () {
     $('#undoButton').hide()
     $('#undoButton').unbind('click')
 
-    // Show replay button
+    // Hide replay button
     $('#replayButton').hide()
 
     // Play audio
