@@ -13,6 +13,10 @@ video {
     vertical-align: middle;
 }
 
+body {
+    overflow-y: hidden;
+}
+
 #subjForm {
     margin: auto;
     width: 425px;

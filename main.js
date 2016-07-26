@@ -103,16 +103,29 @@ var RunInfo = (function () {
                      object,
                      target,
                      $('#expButton').prop('checked') ? 1 : 0
-                    ]
-    responses.push(trialInfo)
-    console.log(responses)
+                    ],
+        line = trialInfo.join(',') + '\n'
+
+//    responses.push(trialInfo)
+//    console.log(responses)
+    $.ajax({
+      url: 'writeResults.php',
+      type: 'POST',
+      data: {'results': line},
+      processData: false,
+      error: function (xhr, status, error) {
+        console.log(xhr)
+        console.log(status)
+        console.log(error)
+      }
+    })
   }
 
   function writeResults() {
-    var csv,
-        encodedUri,
-        link,
-        filename = 'SR_' + subjInfo.subjId + '.csv'
+    var csv//,
+//        encodedUri,
+//       link,
+//        filename = 'SR_' + subjInfo.subjId + '.csv'
 
     csv = Papa.unparse({
       fields: ['subjId', 'date', 'script', 'respIndex', 'storyId', 'phase', 'cond',
@@ -122,11 +135,14 @@ var RunInfo = (function () {
     {
       newline: "\n"
     })
-    encodedUri = encodeURI(csv)
-    link = document.createElement('a')
-    link.setAttribute('href', 'data:text/csv;charset=utf-8, ' + encodedUri)
-    link.setAttribute('download', filename)
-    link.click()
+
+    $.post('writeResults.php')
+
+//     encodedUri = encodeURI(csv)
+//     link = document.createElement('a')
+//     link.setAttribute('href', 'data:text/csv;charset=utf-8, ' + encodedUri)
+//     link.setAttribute('download', filename)
+//     link.click()
   }
 
   return { setExpInfo: setExpInfo, setSubjInfo: setSubjInfo,
@@ -273,6 +289,11 @@ var Exp = (function () {
         }
       }
     })
+
+    // Warning for page refresh
+    window.onbeforeunload = function() {
+      return "Are you sure you want to refresh? Data will be lost."
+    }
   }
 
   /********** Story navigation ************/
