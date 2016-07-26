@@ -105,20 +105,9 @@ var RunInfo = (function () {
                      $('#expButton').prop('checked') ? 1 : 0
                     ],
         line = trialInfo.join(',') + '\n'
+		console.log(line)
 
-//    responses.push(trialInfo)
-//    console.log(responses)
-    $.ajax({
-      url: 'writeResults.php',
-      type: 'POST',
-      data: {'results': line},
-      processData: false,
-      error: function (xhr, status, error) {
-        console.log(xhr)
-        console.log(status)
-        console.log(error)
-      }
-    })
+		$.post('writeResults.php', {results: line})
   }
 
   function writeResults() {
